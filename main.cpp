@@ -691,3 +691,7 @@ void deletePatient(PatientNode*& head) {
     system("cls");
     patientRegistation();
 }
+
+void coba(){
+    cout << "hello world";
+}
