@@ -1,0 +1,10 @@
+723,Dr.Andi,Spesialis Jantung
+456,Dr.Budi,Spesialis Paru
+789,Dr.Sintia,Umum
+321,Dr.Dedi,Spesialis Mata
+654,Dr.Eka,Spesialis THT
+987,Dr.Fani,Spesialis Kulit
+231,Dr.Gita,Spesialis Saraf
+564,Dr.Hadi,Spesialis Bedah
+897,Dr.Indah,Spesialis Kandungan
+312,Dr.Joko,Umum
