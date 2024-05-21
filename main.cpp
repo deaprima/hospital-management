@@ -64,8 +64,16 @@ struct DoctorNode {
     DoctorNode* next;
 };
 
+// Struct untuk Node Janji Temu (Appointment)
+struct AppointmentNode {
+    Appointment data;
+    AppointmentNode* next;
+};
+
 PatientNode* patientHead = nullptr;
 DoctorNode* doctorHead = nullptr;
+AppointmentNode* appointmentHead = nullptr;
+AppointmentNode* appointmentTail = nullptr;
 
 // ########################################################## DEKLARASI FUNGSI
 void header();
@@ -77,6 +85,9 @@ void savePatients(PatientNode* head);
 void addDoctor(DoctorNode*& head, const Doctor& newData);
 void loadDoctors(DoctorNode*& head);
 void saveDoctors(DoctorNode* head);
+void addAppointment(AppointmentNode*& head, AppointmentNode*& tail, const Appointment& newData);
+void loadAppointments(AppointmentNode*& head, AppointmentNode*& tail);
+void saveAppointments(AppointmentNode* head);
 
 void patientManagement();
 void registPatient(PatientNode*& head);
@@ -92,16 +103,24 @@ void searchDoctors(DoctorNode* head);
 void editDoctor(DoctorNode* head);
 void deleteDoctor(DoctorNode*& head);
 
+void appointmentScheduling();
+void createAppointment(AppointmentNode*& head, AppointmentNode*& tail);
+void viewAppointments(AppointmentNode* head);
+void editAppointment(AppointmentNode* head);
+void cancelAppointment(AppointmentNode*& head, AppointmentNode*& tail);
+
 // ########################################################## MAIN PROGRAM
 int main() {
 
     loadPatients(patientHead);
     loadDoctors(doctorHead);
+    loadAppointments(appointmentHead, appointmentTail);
 
     mainMenu();
 
     savePatients(patientHead);
     saveDoctors(doctorHead);
+    saveAppointments(appointmentHead);
     return 0;
 }
 
@@ -140,7 +159,7 @@ void mainMenu() {
                 doctorManagement();
                 break;
             case 3: 
-                // Penjadwalan Janji Temu; 
+                appointmentScheduling();
                 break;
             case 4: 
                 // Pemeriksaan dan pengobatan; 
@@ -154,6 +173,7 @@ void mainMenu() {
             case 0: 
                 savePatients(patientHead);
                 saveDoctors(doctorHead);
+                saveAppointments(appointmentHead);
                 exit(0);
                 break;
             default: cout << "Pilihan tidak valid.\n";
@@ -257,6 +277,60 @@ void saveDoctors(DoctorNode* head) {
         file << dataDoctor.id << "," 
             << dataDoctor.name << "," 
             << dataDoctor.specialization << "\n";
+
+        current = current->next;
+    }
+    file.close();
+}
+
+void addAppointment(AppointmentNode*& head, AppointmentNode*& tail, const Appointment& newData) {
+    AppointmentNode* newNode = new AppointmentNode{newData, nullptr};
+    if (tail == nullptr) {
+        head = tail = newNode;
+    } else {
+        tail->next = newNode;
+        tail = newNode;
+    }
+}
+
+void loadAppointments(AppointmentNode*& head, AppointmentNode*& tail) {
+    ifstream file("data_janji_temu.txt");
+    string line;
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        Appointment dataAppointment;
+
+        getline(ss, line, ',');
+        dataAppointment.id = stoi(line);
+
+        getline(ss, line, ',');
+        dataAppointment.patientId = stoi(line);
+
+        getline(ss, line, ',');
+        dataAppointment.doctorId = stoi(line);
+
+        getline(ss, dataAppointment.date, ',');
+
+        getline(ss, dataAppointment.time, ',');
+
+        addAppointment(head, tail, dataAppointment);
+    }
+    file.close();
+}
+
+void saveAppointments(AppointmentNode* head) {
+    ofstream file("data_janji_temu.txt");
+
+    AppointmentNode* current = head;
+    while (current != nullptr) {
+        Appointment& dataAppointment = current->data;
+
+        file << dataAppointment.id << "," 
+            << dataAppointment.patientId << "," 
+            << dataAppointment.doctorId << "," 
+            << dataAppointment.date << "," 
+            << dataAppointment.time << "\n";
 
         current = current->next;
     }
@@ -1093,4 +1167,157 @@ void deleteDoctor(DoctorNode*& head) {
 
     system("cls");
     doctorManagement();
+}
+
+void appointmentScheduling() {
+    header();
+    cout <<"#--------------------- PENJADWALAN JANJI TEMU --------------------#"<<endl;
+    cout << endl;
+
+    int choice;
+    do {
+        cout << "1. Buat Janji Temu Baru\n";
+        cout << "2. Lihat Daftar Janji Temu\n";
+        cout << "3. Edit Janji Temu\n";
+        cout << "4. Batalkan Janji Temu\n";
+        cout << "0. Kembali\n";
+
+        cout << endl;
+        cout << "Pilih sub-menu: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: 
+                createAppointment(appointmentHead, appointmentTail); 
+                break;
+            case 2: 
+                viewAppointments(appointmentHead); 
+                break;
+            case 3: 
+                editAppointment(appointmentHead); 
+                break;
+            case 4: 
+                cancelAppointment(appointmentHead, appointmentTail); 
+                break;
+            case 0: 
+                mainMenu(); 
+                break;
+            default: cout << "Pilihan tidak valid.\n";
+        }
+    } while (choice != 0);
+}
+
+void createAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
+    Appointment newAppointment;
+
+    cout << "Masukkan ID janji temu: ";
+    cin >> newAppointment.id;
+    cout << "Masukkan ID pasien: ";
+    cin >> newAppointment.patientId;
+    cout << "Masukkan ID dokter: ";
+    cin >> newAppointment.doctorId;
+    cout << "Masukkan tanggal janji temu (YYYY-MM-DD): ";
+    cin >> newAppointment.date;
+    cout << "Masukkan waktu janji temu (HH:MM): ";
+    cin >> newAppointment.time;
+
+    addAppointment(head, tail, newAppointment);
+
+    cout << "Janji temu berhasil dibuat.\n";
+    saveAppointments(head);
+
+    int back;
+    do{
+        cout << endl;
+        cout << "0.Kembali\n";
+        cout << "Pilih opsi: ";
+        cin >> back;
+    } while (back !=0);
+
+    system("cls");
+    appointmentScheduling();
+}
+
+void viewAppointments(AppointmentNode* head) {
+    header();
+    cout <<"#----------------------- DAFTAR JANJI TEMU -----------------------#"<<endl;
+    cout << endl;
+
+    AppointmentNode* current = head;
+    while (current != nullptr) {
+        Appointment& appointment = current->data;
+        cout << "ID Janji Temu: " << appointment.id << endl;
+        cout << "ID Pasien: " << appointment.patientId << endl;
+        cout << "ID Dokter: " << appointment.doctorId << endl;
+        cout << "Tanggal: " << appointment.date << endl;
+        cout << "Waktu: " << appointment.time << endl;
+        cout << "-----------------------------\n";
+        current = current->next;
+    }
+}
+
+void editAppointment(AppointmentNode* head) {
+    int id;
+    cout << "Masukkan ID janji temu yang ingin diedit: ";
+    cin >> id;
+
+    AppointmentNode* current = head;
+    while (current != nullptr) {
+        if (current->data.id == id) {
+            cout << "Masukkan ID pasien baru: ";
+            cin >> current->data.patientId;
+            cout << "Masukkan ID dokter baru: ";
+            cin >> current->data.doctorId;
+            cout << "Masukkan tanggal janji temu baru (YYYY-MM-DD): ";
+            cin >> current->data.date;
+            cout << "Masukkan waktu janji temu baru (HH:MM): ";
+            cin >> current->data.time;
+            cout << "Janji temu berhasil diupdate.\n";
+            saveAppointments(head);
+            return;
+        }
+        current = current->next;
+    }
+    cout << "Janji temu tidak ditemukan.\n";
+}
+
+void cancelAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
+    int id;
+    cout << "Masukkan ID janji temu yang ingin dibatalkan: ";
+    cin >> id;
+
+    if (head == nullptr) {
+        cout << "Janji temu tidak ditemukan.\n";
+        return;
+    }
+
+    if (head->data.id == id) {
+        AppointmentNode* temp = head;
+        head = head->next;
+        delete temp;
+        if (head == nullptr) {
+            tail = nullptr;
+        }
+        cout << "Janji temu berhasil dibatalkan.\n";
+        saveAppointments(head);
+        return;
+    }
+
+    AppointmentNode* current = head;
+    while (current->next != nullptr && current->next->data.id != id) {
+        current = current->next;
+    }
+
+    if (current->next == nullptr) {
+        cout << "Janji temu tidak ditemukan.\n";
+    } else {
+        AppointmentNode* temp = current->next;
+        current->next = current->next->next;
+        if (current->next == nullptr) {
+            tail = current;
+        }
+        delete temp;
+        cout << "Janji temu berhasil dibatalkan.\n";
+        saveAppointments(head);
+    }
 }
