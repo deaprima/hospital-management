@@ -39,11 +39,18 @@ struct Examination {
 };
 
 // Struct untuk menyimpan tagihan
-struct Bill {
+struct Tagihan {
     int id;
-    int patientId;
-    double amount;
-    bool isPaid;
+    string namaPasien;
+    string layanan;
+    long long jumlah;
+    string tanggal;
+    bool sudahDibayar;  
+};
+
+struct Node {
+    Tagihan data;
+    Node* next;
 };
 
 // Struct untuk laporan
@@ -74,6 +81,7 @@ PatientNode* patientHead = nullptr;
 DoctorNode* doctorHead = nullptr;
 AppointmentNode* appointmentHead = nullptr;
 AppointmentNode* appointmentTail = nullptr;
+Node* head = nullptr; 
 
 // ########################################################## DEKLARASI FUNGSI
 void header();
@@ -108,6 +116,15 @@ void createAppointment(AppointmentNode*& head, AppointmentNode*& tail);
 void viewAppointments(AppointmentNode* head);
 void editAppointment(AppointmentNode* head);
 void cancelAppointment(AppointmentNode*& head, AppointmentNode*& tail);
+
+void billingandPayment();
+void buatTagihanBaru();
+void lihatDaftarTagihan();
+bool cariTagihanRekursif(Node* temp, int idCari, string namaCari);
+void cariTagihan();
+void editTagihan();
+void bayarTagihan();
+
 
 // ########################################################## MAIN PROGRAM
 int main() {
@@ -165,7 +182,7 @@ void mainMenu() {
                 // Pemeriksaan dan pengobatan; 
                 break;
             case 5: 
-                // Billing dan pembayaran; 
+                billingandPayment(); 
                 break;
             case 6: 
                 // laporan; 
@@ -1319,5 +1336,224 @@ void cancelAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
         delete temp;
         cout << "Janji temu berhasil dibatalkan.\n";
         saveAppointments(head);
+    }
+}
+
+void billingandPayment() {
+    int pilihan;
+    do {
+        cout << "\nMenu Billing dan Pembayaran:" << endl;
+        cout << "1. Buat Tagihan Baru" << endl;
+        cout << "2. Lihat Daftar Tagihan" << endl;
+        cout << "3. Cari Tagihan" << endl;
+        cout << "4. Edit Tagihan" << endl;
+        cout << "5. Bayar Tagihan" << endl;
+        cout << "6. Keluar" << endl;
+        cout << "Masukkan pilihan: ";
+        cin >> pilihan;
+
+        switch (pilihan) {
+            case 1:
+                buatTagihanBaru();
+                break;
+            case 2:
+                lihatDaftarTagihan();
+                break;
+            case 3:
+                cariTagihan();
+                break;
+            case 4:
+                editTagihan();
+                break;
+            case 5:
+                bayarTagihan();
+                break;
+            case 6:
+                break;
+            default:
+                cout << "\nPilihan tidak valid. Silakan coba lagi." << endl;
+        }
+    } while (pilihan != 6);
+}
+
+void buatTagihanBaru() {
+    Tagihan tagihanBaru;
+    
+    cout << "\nMasukkan ID tagihan\t\t: ";
+    cin >> tagihanBaru.id;
+    cin.ignore(); 
+
+    Node* temp = head;
+    while (temp != nullptr) {
+        if (temp->data.id == tagihanBaru.id) {
+            cout << "ID tagihan sudah ada. Silakan masukkan ID lain.\n";
+            return; 
+        }
+        temp = temp->next;
+    }
+
+    cout << "Masukkan nama pasien \t\t: ";
+    getline(cin, tagihanBaru.namaPasien);
+    cout << "Masukkan layanan\t\t: ";
+    getline(cin, tagihanBaru.layanan);
+    cout << "Masukkan jumlah tagihan\t\t: ";
+    cin >> tagihanBaru.jumlah;
+    cin.ignore();
+    cout << "Masukkan tanggal (YYYY-MM-DD)\t: ";
+    getline(cin, tagihanBaru.tanggal);
+
+    Node* newNode = new Node;
+    newNode->data = tagihanBaru;
+    newNode->next = nullptr;
+
+    if (head == nullptr) {
+        head = newNode;
+    } else { 
+        Node* temp = head;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
+
+    cout << "\nTagihan berhasil dibuat!" << endl;
+}
+
+void lihatDaftarTagihan() {
+    if (head == nullptr) {
+        cout << "\nTidak ada tagihan yang tersimpan." << endl;
+    return;
+    }
+    Node* temp = head;
+    if (temp == nullptr) {
+        cout << "\nTidak ada tagihan yang ditemukan." << endl;
+        return;
+    }
+    cout << "\nDaftar Tagihan" << endl;
+    while (temp != nullptr) {
+        Tagihan tagihanSaatIni = temp->data;
+        cout << "ID\t\t: " << tagihanSaatIni.id << "\nNama Pasien\t: " << tagihanSaatIni.namaPasien
+             << " \nLayanan\t\t: " << tagihanSaatIni.layanan << " \nJumlah\t\t: Rp" << tagihanSaatIni.jumlah
+             << " \nTanggal\t\t: " << tagihanSaatIni.tanggal << endl;
+        temp = temp->next;
+    }
+}
+
+bool cariTagihanRekursif(Node* temp, int idCari, string namaCari) {
+  if (temp == nullptr) {
+    return false; 
+  }
+
+  if (temp->data.id == idCari || temp->data.namaPasien == namaCari) {
+    cout << "\nTagihan ditemukan\t\t:" << endl;
+    cout << "\nID\t\t: " << temp->data.id << "\nNama Pasien\t: " << temp->data.namaPasien
+         << " \nLayanan\t\t: " << temp->data.layanan << " \nJumlah\t\t: Rp" << temp->data.jumlah
+         << " \nTanggal\t\t: " << temp->data.tanggal << endl;
+    return true; 
+  }
+
+  return cariTagihanRekursif(temp->next, idCari, namaCari);
+}
+
+void cariTagihan() {
+    if (head == nullptr) {
+        cout << "\nTidak ada tagihan yang tersimpan untuk dicari." << endl;
+        return;
+    }
+    int idCari;
+    string namaCari;
+    cout << "\nMasukkan ID tagihan yang ingin dicari\t: ";
+    cin >> idCari;
+    cin.ignore(); 
+
+   bool ditemukan = cariTagihanRekursif(head, idCari, namaCari);
+  if (!ditemukan) {
+    cout << "Tagihan tidak ditemukan." << endl;
+  }
+}
+
+void editTagihan() {
+    if (head == nullptr) {
+        cout << "\nTidak ada tagihan yang tersimpan untuk diedit." << endl;
+        return;
+    }
+
+    int idEdit;
+    cout << "\nMasukkan ID tagihan yang ingin diedit: ";
+    cin >> idEdit;
+
+    Node* temp = head;
+    bool ditemukan = false;
+    while (temp != nullptr) {
+        Tagihan& tagihanSaatIni = temp->data;
+        if (tagihanSaatIni.id == idEdit) {
+            ditemukan = true;
+            cout << "Masukkan nama pasien baru\t\t: ";
+            cin.ignore(); 
+            getline(cin, tagihanSaatIni.namaPasien);
+            cout << "Masukkan layanan baru\t\t\t: ";
+            cin.ignore(); 
+            getline(cin, tagihanSaatIni.layanan);
+            cout << "Masukkan jumlah baru\t\t\t: ";
+            cin >> tagihanSaatIni.jumlah;
+            cin.ignore();
+            cout << "Masukkan tanggal baru (YYYY-MM-DD)\t: ";
+            getline(cin, tagihanSaatIni.tanggal);
+            cout << "Tagihan berhasil diperbarui!" << endl;
+            break;
+        }
+        temp = temp->next;
+    }
+
+    if (!ditemukan) {
+        cout << "Tagihan tidak ditemukan." << endl;
+    }
+}
+
+void bayarTagihan() {
+    if (head == nullptr) {
+        cout << "Tidak ada tagihan yang tersimpan." << endl;
+        return;
+    }
+
+    int id;
+    cout << "Masukkan ID Tagihan yang ingin dibayar: ";
+    cin >> id;
+
+    Node* temp = head;
+    Node* prev = nullptr;
+    bool found = false;
+    while (temp != nullptr) {
+        if (temp->data.id == id) {
+            found = true;
+            cout << "Biaya Tagihan\t: Rp" << temp->data.jumlah << endl;
+            cout << "Nama \t\t: " << temp->data.namaPasien << endl;
+
+            char konfirmasi;
+            cout << "Apakah Anda ingin membayar tagihan ini? (y/n): ";
+            cin >> konfirmasi;
+
+            if (konfirmasi == 'y' || konfirmasi == 'Y') {
+                temp->data.sudahDibayar = true; 
+                cout << "\nTagihan berhasil dibayar." << endl;
+                if (prev == nullptr) { 
+                    head = temp->next;
+                } else {
+                    prev->next = temp->next;
+                }
+                delete temp;
+                return;
+            } else {
+                cout << "Pembayaran dibatalkan." << endl;
+                return;
+            }
+        }
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (!found) {
+        cout << "Tagihan tidak ditemukan." << endl;
+        return;
     }
 }
