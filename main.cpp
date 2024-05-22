@@ -1271,6 +1271,18 @@ void viewAppointments(AppointmentNode* head) {
         cout << "-----------------------------\n";
         current = current->next;
     }
+
+    int back;
+    do{
+        cout << endl;
+        cout << "0.Kembali\n";
+        cout << "Pilih opsi: ";
+        cin >> back;
+    } while (back !=0);
+
+    system("cls");
+    appointmentScheduling();
+
 }
 
 void editAppointment(AppointmentNode* head) {
@@ -1296,6 +1308,17 @@ void editAppointment(AppointmentNode* head) {
         current = current->next;
     }
     cout << "Janji temu tidak ditemukan.\n";
+
+    int back;
+    do{
+        cout << endl;
+        cout << "0.Kembali\n";
+        cout << "Pilih opsi: ";
+        cin >> back;
+    } while (back !=0);
+
+    system("cls");
+    appointmentScheduling();
 }
 
 void cancelAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
@@ -1337,6 +1360,16 @@ void cancelAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
         cout << "Janji temu berhasil dibatalkan.\n";
         saveAppointments(head);
     }
+    int back;
+    do{
+        cout << endl;
+        cout << "0.Kembali\n";
+        cout << "Pilih opsi: ";
+        cin >> back;
+    } while (back !=0);
+
+    system("cls");
+    appointmentScheduling();
 }
 
 void billingandPayment() {
