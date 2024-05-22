@@ -83,6 +83,8 @@ AppointmentNode* appointmentHead = nullptr;
 AppointmentNode* appointmentTail = nullptr;
 Node* head = nullptr; 
 
+int lastAppointmentId = 0;
+
 // ########################################################## DEKLARASI FUNGSI
 void header();
 void mainMenu();
@@ -330,6 +332,8 @@ void loadAppointments(AppointmentNode*& head, AppointmentNode*& tail) {
         getline(ss, dataAppointment.date, ',');
 
         getline(ss, dataAppointment.time, ',');
+
+        lastAppointmentId = max(lastAppointmentId, dataAppointment.id);
 
         addAppointment(head, tail, dataAppointment);
     }
@@ -1227,13 +1231,13 @@ void appointmentScheduling() {
 void createAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
     Appointment newAppointment;
 
-    cout << "Masukkan ID janji temu: ";
-    cin >> newAppointment.id;
+    newAppointment.id = ++lastAppointmentId;
+
     cout << "Masukkan ID pasien: ";
     cin >> newAppointment.patientId;
     cout << "Masukkan ID dokter: ";
     cin >> newAppointment.doctorId;
-    cout << "Masukkan tanggal janji temu (YYYY-MM-DD): ";
+    cout << "Masukkan tanggal janji temu (DD-MM-YYYY): ";
     cin >> newAppointment.date;
     cout << "Masukkan waktu janji temu (HH:MM): ";
     cin >> newAppointment.time;
@@ -1297,7 +1301,7 @@ void editAppointment(AppointmentNode* head) {
             cin >> current->data.patientId;
             cout << "Masukkan ID dokter baru: ";
             cin >> current->data.doctorId;
-            cout << "Masukkan tanggal janji temu baru (YYYY-MM-DD): ";
+            cout << "Masukkan tanggal janji temu baru (DD-MM-YYYY): ";
             cin >> current->data.date;
             cout << "Masukkan waktu janji temu baru (HH:MM): ";
             cin >> current->data.time;
