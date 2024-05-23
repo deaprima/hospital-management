@@ -26,8 +26,6 @@ struct Appointment {
     int id;
     int patientId;
     int doctorId;
-    string patientName;
-    string doctorName;
     string date;
     string time;
 };
@@ -73,6 +71,13 @@ struct DoctorNode {
     DoctorNode* next;
 };
 
+// Struct untuk tree Pasien
+struct PatientTreeNode {
+    Patient data;
+    PatientTreeNode* left;
+    PatientTreeNode* right;
+};
+
 // Struct untuk Node Janji Temu (Appointment)
 struct AppointmentNode {
     Appointment data;
@@ -91,6 +96,7 @@ PatientNode* patientHead = nullptr;
 DoctorNode* doctorHead = nullptr;
 AppointmentNode* appointmentHead = nullptr;
 AppointmentNode* appointmentTail = nullptr;
+PatientTreeNode* patientRoot = nullptr;
 Node* head = nullptr; 
 HashTable doctorHashTable;
 
@@ -103,6 +109,8 @@ void mainMenu();
 int hashFunction(int id);
 void addDoctorToHashTable(HashTable& hashTable, const Doctor& newDoctor);
 void removeDoctorFromHashTable(HashTable& hashTable, int id);
+void insertPatientToTree(PatientTreeNode*& root, const Patient& newData);
+void deletePatientTreeNode(PatientTreeNode*& root);
 void addPatient(PatientNode*& head, const Patient& newData);
 void loadPatients(PatientNode*& head);
 void savePatients(PatientNode* head);
@@ -116,8 +124,10 @@ void saveAppointments(AppointmentNode* head);
 void patientManagement();
 void registPatient(PatientNode*& head);
 void viewPatients(PatientNode* head);
+PatientTreeNode* searchPatientById(PatientTreeNode* root, int id);
 void searchPatients(PatientNode* head);
 void editPatient(PatientNode* head);
+void deletePatientById(PatientTreeNode*& root, int id);
 void deletePatient(PatientNode*& head);
 
 void doctorManagement();
@@ -184,7 +194,6 @@ void mainMenu() {
         cout << "3. Penjadwalan Janji Temu\n";
         cout << "4. Pemeriksaan dan Pengobatan\n";
         cout << "5. Billing dan Pembayaran\n";
-        cout << "6. Laporan dan Analisis\n";
         cout << "0. Keluar\n";
 
         cout << endl;
@@ -206,9 +215,6 @@ void mainMenu() {
                 break;
             case 5: 
                 billingandPayment(); 
-                break;
-            case 6: 
-                // laporan; 
                 break;
             case 0: 
                 savePatients(patientHead);
@@ -250,6 +256,28 @@ void removeDoctorFromHashTable(HashTable& hashTable, int id) {
     }
 }
 
+void insertPatientToTree(PatientTreeNode*& root, const Patient& newData) {
+    if (root == nullptr) {
+        root = new PatientTreeNode{newData, nullptr, nullptr};
+    } else {
+        if (newData.id < root->data.id) {
+            insertPatientToTree(root->left, newData);
+        } else if (newData.id > root->data.id) {
+            insertPatientToTree(root->right, newData);
+        }
+    }
+}
+
+void deletePatientTreeNode(PatientTreeNode*& root) {
+    if (root == nullptr) {
+        return;
+    }
+    deletePatientTreeNode(root->left);
+    deletePatientTreeNode(root->right);
+    delete root;
+    root = nullptr;
+}
+
 void addPatient(PatientNode*& head, const Patient& newData) {
     PatientNode* newNode = new PatientNode{newData, nullptr};
     if (head == nullptr) {
@@ -282,6 +310,7 @@ void loadPatients(PatientNode*& head) {
         getline(ss, dataPatient.address, ',');
 
         addPatient(head, dataPatient);
+        insertPatientToTree(patientRoot, dataPatient);
     }
     file.close();
 }
@@ -378,12 +407,8 @@ void loadAppointments(AppointmentNode*& head, AppointmentNode*& tail) {
         getline(ss, line, ',');
         dataAppointment.patientId = stoi(line);
 
-        getline(ss, dataAppointment.patientName, ',');
-
         getline(ss, line, ',');
         dataAppointment.doctorId = stoi(line);
-
-        getline(ss, dataAppointment.doctorName, ',');
 
         getline(ss, dataAppointment.date, ',');
 
@@ -404,38 +429,14 @@ void saveAppointments(AppointmentNode* head) {
         Appointment& dataAppointment = current->data;
 
         file << dataAppointment.id << "," 
-             << dataAppointment.patientId << "," 
-             << dataAppointment.patientName << "," 
-             << dataAppointment.doctorId << "," 
-             << dataAppointment.doctorName << ","
-             << dataAppointment.date << "," 
-             << dataAppointment.time << "\n";
+            << dataAppointment.patientId << "," 
+            << dataAppointment.doctorId << "," 
+            << dataAppointment.date << "," 
+            << dataAppointment.time << "\n";
 
         current = current->next;
     }
     file.close();
-}
-
-string getPatientNameById(PatientNode* head, int patientId) {
-    PatientNode* current = head;
-    while (current != nullptr) {
-        if (current->data.id == patientId) {
-            return current->data.name;
-        }
-        current = current->next;
-    }
-    return "Unknown";
-}
-
-string getDoctorNameById(DoctorNode* head, int doctorId) {
-    DoctorNode* current = head;
-    while (current != nullptr) {
-        if (current->data.id == doctorId) {
-            return current->data.name;
-        }
-        current = current->next;
-    }
-    return "Unknown";
 }
 
 void patientManagement(){
@@ -505,6 +506,7 @@ void registPatient(PatientNode*& head) {
 
     cout << "Pasien berhasil ditambahkan." << endl;
     savePatients(head);
+    insertPatientToTree(patientRoot, p);
 
     int back;
     do{
@@ -545,6 +547,16 @@ void viewPatients(PatientNode* head) {
     patientManagement();
 }
 
+PatientTreeNode* searchPatientById(PatientTreeNode* root, int id) {
+    if (root == nullptr || root->data.id == id) {
+        return root;
+    }
+    if (id < root->data.id) {
+        return searchPatientById(root->left, id);
+    }
+    return searchPatientById(root->right, id);
+}
+
 void searchPatients(PatientNode* head) {
     header();
     cout <<"#------------------------ CARI DATA PASIEN -----------------------#"<<endl;
@@ -574,19 +586,15 @@ void searchPatients(PatientNode* head) {
             cout << "Masukkan ID Pasien: ";
             cin >> id;
 
-            PatientNode* temp = head;
             bool found = false;
-            while (temp != nullptr) {
-                if (temp->data.id == id) {
-                    cout << "Data Pasien Ditemukan:\n";
-                    cout << "ID         : " << temp->data.id << endl;
-                    cout << "Nama       : " << temp->data.name << endl;
-                    cout << "Umur       : " << temp->data.age << endl;
-                    cout << "Alamat     : " << temp->data.address << endl;
-                    found = true;
-                    break;
-                }
-                temp = temp->next;
+            PatientTreeNode* patient = searchPatientById(patientRoot, id);
+            if (patient != nullptr) {
+                found = true;
+                cout << "Data Pasien Ditemukan:\n";
+                cout << "ID         : " << patient->data.id << endl;
+                cout << "Nama       : " << patient->data.name << endl;
+                cout << "Umur       : " << patient->data.age << endl;
+                cout << "Alamat     : " << patient->data.address << endl;
             }
             if (!found) {
                 cout << "Data Pasien dengan ID " << id << " tidak ditemukan.\n";
@@ -607,6 +615,7 @@ void searchPatients(PatientNode* head) {
             bool found = false;
             while (temp != nullptr) {
                 if (temp->data.name == name) {
+                    found = true;
                     cout << "Data Pasien Ditemukan:\n";
                     cout << "ID         : " << temp->data.id << endl;
                     cout << "Nama       : " << temp->data.name << endl;
@@ -625,6 +634,7 @@ void searchPatients(PatientNode* head) {
             cout << "Pilihan tidak valid." << endl;
             break;
     }
+
 
     int back;
     do {
@@ -684,6 +694,8 @@ void editPatient(PatientNode* head) {
                 getline(cin, temp->data.address);
 
                 savePatients(patientHead);
+                deletePatientById(patientRoot, id);
+                insertPatientToTree(patientRoot, temp->data);
                 cout << "Data Pasien Berhasil Diperbarui.\n";
                 found = true;
                 break;
@@ -703,6 +715,7 @@ void editPatient(PatientNode* head) {
         bool found = false;
         while (temp != nullptr) {
             if (temp->data.name == name) {
+                found = true;
                 cout << "Data Pasien Ditemukan:\n";
                 cout << "ID         : " << temp->data.id << endl;
                 cout << "Nama       : " << temp->data.name << endl;
@@ -720,6 +733,8 @@ void editPatient(PatientNode* head) {
                 getline(cin, temp->data.address);
 
                 savePatients(patientHead);
+                deletePatientById(patientRoot, temp->data.id);
+                insertPatientToTree(patientRoot, temp->data);
                 cout << "Data Pasien Berhasil Diperbarui.\n";
                 found = true;
                 break;
@@ -743,6 +758,34 @@ void editPatient(PatientNode* head) {
 
     system("cls");
     patientManagement();
+}
+
+void deletePatientById(PatientTreeNode*& root, int id) {
+    if (root == nullptr) {
+        return;
+    }
+    if (id < root->data.id) {
+        deletePatientById(root->left, id);
+    } else if (id > root->data.id) {
+        deletePatientById(root->right, id);
+    } else {
+        if (root->left == nullptr) {
+            PatientTreeNode* temp = root->right;
+            delete root;
+            root = temp;
+        } else if (root->right == nullptr) {
+            PatientTreeNode* temp = root->left;
+            delete root;
+            root = temp;
+        } else {
+            PatientTreeNode* temp = root->right;
+            while (temp->left != nullptr) {
+                temp = temp->left;
+            }
+            root->data = temp->data;
+            deletePatientById(root->right, temp->data.id);
+        }
+    }
 }
 
 void deletePatient(PatientNode*& head) {
@@ -791,6 +834,7 @@ void deletePatient(PatientNode*& head) {
                     }
                     delete temp;
                     savePatients(patientHead);
+                    deletePatientById(patientRoot, id);
                     cout << "Data Pasien dengan ID " << id << " berhasil dihapus.\n";
                 } else {
                     cout << "Penghapusan data dibatalkan.\n";
@@ -1328,19 +1372,10 @@ void createAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
 
     cout << "Masukkan ID pasien: ";
     cin >> newAppointment.patientId;
-
-    newAppointment.patientName = getPatientNameById(patientHead, newAppointment.patientId);
-    cout << "Nama Pasien: " << newAppointment.patientName << endl;
-    
     cout << "Masukkan ID dokter: ";
     cin >> newAppointment.doctorId;
-
-    newAppointment.doctorName = getDoctorNameById(doctorHead, newAppointment.doctorId);
-    cout << "Nama Dokter: " << newAppointment.doctorName << endl;
-    
     cout << "Masukkan tanggal janji temu (DD-MM-YYYY): ";
     cin >> newAppointment.date;
-
     cout << "Masukkan waktu janji temu (HH:MM): ";
     cin >> newAppointment.time;
 
@@ -1371,9 +1406,7 @@ void viewAppointments(AppointmentNode* head) {
         Appointment& appointment = current->data;
         cout << "ID Janji Temu: " << appointment.id << endl;
         cout << "ID Pasien: " << appointment.patientId << endl;
-        cout << "Nama Pasien: " << appointment.patientName << endl;
         cout << "ID Dokter: " << appointment.doctorId << endl;
-        cout << "Nama Doktor: " << appointment.doctorName << endl;
         cout << "Tanggal: " << appointment.date << endl;
         cout << "Waktu: " << appointment.time << endl;
         cout << "-----------------------------\n";
@@ -1401,19 +1434,14 @@ void editAppointment(AppointmentNode* head) {
     AppointmentNode* current = head;
     while (current != nullptr) {
         if (current->data.id == id) {
-            cout << "ID Pasien: " << current->data.patientId << "\n";
-            cout << "Nama Pasien: " << current->data.patientName << "\n";
-            cout << "ID Dokter: " << current->data.doctorId << "\n";
-            cout << "Nama Pasien: " << current->data.doctorName << "\n";
-            cout << "Tanggal (saat ini): " << current->data.date << "\n";
-            cout << "Waktu (saat ini): " << current->data.time << "\n";
-
-            cout << "Masukkan Tanggal baru (YYYY-MM-DD): ";
+            cout << "Masukkan ID pasien baru: ";
+            cin >> current->data.patientId;
+            cout << "Masukkan ID dokter baru: ";
+            cin >> current->data.doctorId;
+            cout << "Masukkan tanggal janji temu baru (DD-MM-YYYY): ";
             cin >> current->data.date;
-
-            cout << "Masukkan Waktu baru (HH:MM): ";
+            cout << "Masukkan waktu janji temu baru (HH:MM): ";
             cin >> current->data.time;
-
             cout << "Janji temu berhasil diupdate.\n";
             saveAppointments(head);
             return;
@@ -1439,38 +1467,47 @@ void cancelAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
     cout << "Masukkan ID janji temu yang ingin dibatalkan: ";
     cin >> id;
 
-    AppointmentNode* current = head;
-    AppointmentNode* previous = nullptr;
+    if (head == nullptr) {
+        cout << "Janji temu tidak ditemukan.\n";
+        return;
+    }
 
-    while (current != nullptr) {
-        if (current->data.id == id) {
-            if (previous == nullptr) {
-                head = current->next;
-            } else {
-                previous->next = current->next;
-            }
-            if (current == tail) {
-                tail = previous;
-            }
-            delete current;
-
-            cout << "Janji temu berhasil dibatalkan.\n";
-            saveAppointments(head);
-            return;
+    if (head->data.id == id) {
+        AppointmentNode* temp = head;
+        head = head->next;
+        delete temp;
+        if (head == nullptr) {
+            tail = nullptr;
         }
-        previous = current;
+        cout << "Janji temu berhasil dibatalkan.\n";
+        saveAppointments(head);
+        return;
+    }
+
+    AppointmentNode* current = head;
+    while (current->next != nullptr && current->next->data.id != id) {
         current = current->next;
     }
 
-    cout << "Janji temu dengan ID tersebut tidak ditemukan.\n";
-
+    if (current->next == nullptr) {
+        cout << "Janji temu tidak ditemukan.\n";
+    } else {
+        AppointmentNode* temp = current->next;
+        current->next = current->next->next;
+        if (current->next == nullptr) {
+            tail = current;
+        }
+        delete temp;
+        cout << "Janji temu berhasil dibatalkan.\n";
+        saveAppointments(head);
+    }
     int back;
-    do {
+    do{
         cout << endl;
-        cout << "0. Kembali\n";
+        cout << "0.Kembali\n";
         cout << "Pilih opsi: ";
         cin >> back;
-    } while (back != 0);
+    } while (back !=0);
 
     system("cls");
     appointmentScheduling();
