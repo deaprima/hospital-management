@@ -77,11 +77,20 @@ struct AppointmentNode {
     AppointmentNode* next;
 };
 
+// Ukuran hash table
+const int TABLE_SIZE = 100;
+
+// Hash Table
+struct HashTable {
+    DoctorNode* table[TABLE_SIZE];
+};
+
 PatientNode* patientHead = nullptr;
 DoctorNode* doctorHead = nullptr;
 AppointmentNode* appointmentHead = nullptr;
 AppointmentNode* appointmentTail = nullptr;
 Node* head = nullptr; 
+HashTable doctorHashTable;
 
 int lastAppointmentId = 0;
 
@@ -89,6 +98,9 @@ int lastAppointmentId = 0;
 void header();
 void mainMenu();
 
+int hashFunction(int id);
+void addDoctorToHashTable(HashTable& hashTable, const Doctor& newDoctor);
+void removeDoctorFromHashTable(HashTable& hashTable, int id);
 void addPatient(PatientNode*& head, const Patient& newData);
 void loadPatients(PatientNode*& head);
 void savePatients(PatientNode* head);
@@ -109,6 +121,7 @@ void deletePatient(PatientNode*& head);
 void doctorManagement();
 void registDoctor(DoctorNode*& head);
 void viewDoctors(DoctorNode* head);
+DoctorNode* searchDoctorById(HashTable& hashTable, int id);
 void searchDoctors(DoctorNode* head);
 void editDoctor(DoctorNode* head);
 void deleteDoctor(DoctorNode*& head);
@@ -130,6 +143,12 @@ void bayarTagihan();
 
 // ########################################################## MAIN PROGRAM
 int main() {
+
+    // Inisialisasi hash table dokter
+    for (int i = 0; i < TABLE_SIZE; ++i) {
+        doctorHashTable.table[i] = nullptr;
+    }
+
 
     loadPatients(patientHead);
     loadDoctors(doctorHead);
@@ -200,6 +219,35 @@ void mainMenu() {
     } while (choice != 0);
 }
 
+int hashFunction(int id) {
+    return id % TABLE_SIZE;
+}
+
+void addDoctorToHashTable(HashTable& hashTable, const Doctor& newDoctor) {
+    int index = hashFunction(newDoctor.id);
+    DoctorNode* newNode = new DoctorNode{newDoctor, hashTable.table[index]};
+    hashTable.table[index] = newNode;
+}
+
+void removeDoctorFromHashTable(HashTable& hashTable, int id) {
+    int index = hashFunction(id);
+    DoctorNode* temp = hashTable.table[index];
+    DoctorNode* prev = nullptr;
+    while (temp != nullptr) {
+        if (temp->data.id == id) {
+            if (prev == nullptr) {
+                hashTable.table[index] = temp->next;
+            } else {
+                prev->next = temp->next;
+            }
+            delete temp;
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+    }
+}
+
 void addPatient(PatientNode*& head, const Patient& newData) {
     PatientNode* newNode = new PatientNode{newData, nullptr};
     if (head == nullptr) {
@@ -264,6 +312,7 @@ void addDoctor(DoctorNode*& head, const Doctor& newData) {
         }
         temp->next = newNode;
     }
+    addDoctorToHashTable(doctorHashTable, newData);
 }
 
 void loadDoctors(DoctorNode*& head) {
@@ -282,6 +331,7 @@ void loadDoctors(DoctorNode*& head) {
         getline(ss, dataDoctor.specialization, ',');
 
         addDoctor(head, dataDoctor);
+        addDoctorToHashTable(doctorHashTable, dataDoctor);
     }
     file.close();
 }
@@ -885,6 +935,18 @@ void viewDoctors(DoctorNode* head) {
     doctorManagement();
 }
 
+DoctorNode* searchDoctorById(HashTable& hashTable, int id) {
+    int index = hashFunction(id);
+    DoctorNode* temp = hashTable.table[index];
+    while (temp != nullptr) {
+        if (temp->data.id == id) {
+            return temp;
+        }
+        temp = temp->next;
+    }
+    return nullptr;
+}
+
 void searchDoctors(DoctorNode* head) {
     header();
     cout <<"#------------------------ CARI DATA DOKTER -----------------------#"<<endl;
@@ -914,20 +976,13 @@ void searchDoctors(DoctorNode* head) {
             cout << "Masukkan ID Dokter: ";
             cin >> id;
 
-            DoctorNode* temp = head;
-            bool found = false;
-            while (temp != nullptr) {
-                if (temp->data.id == id) {
-                    cout << "Data Dokter Ditemukan:\n";
-                    cout << "ID         : " << temp->data.id << endl;
-                    cout << "Nama       : " << temp->data.name << endl;
-                    cout << "Spesialis  : " << temp->data.specialization << endl;
-                    found = true;
-                    break;
-                }
-                temp = temp->next;
-            }
-            if (!found) {
+            DoctorNode* temp = searchDoctorById(doctorHashTable, id);
+            if (temp != nullptr) {
+                cout << "Data Dokter Ditemukan:\n";
+                cout << "ID         : " << temp->data.id << endl;
+                cout << "Nama       : " << temp->data.name << endl;
+                cout << "Spesialis  : " << temp->data.specialization << endl;
+            } else {
                 cout << "Data Dokter dengan ID " << id << " tidak ditemukan.\n";
             }
             break;
@@ -1017,7 +1072,10 @@ void editDoctor(DoctorNode* head) {
                 cout << "Masukkan Spesialisasi Dokter Baru: ";
                 getline(cin, temp->data.specialization);
 
+                removeDoctorFromHashTable(doctorHashTable, id);
+                addDoctorToHashTable(doctorHashTable, temp->data);
                 saveDoctors(doctorHead);
+
                 cout << "Data Dokter Berhasil Diperbarui.\n";
                 found = true;
                 break;
@@ -1050,6 +1108,8 @@ void editDoctor(DoctorNode* head) {
                 cout << "Masukkan Spesialisasi Dokter Baru: ";
                 getline(cin, temp->data.specialization);
 
+                removeDoctorFromHashTable(doctorHashTable, temp->data.id);
+                addDoctorToHashTable(doctorHashTable, temp->data);
                 saveDoctors(doctorHead);
                 cout << "Data Dokter Berhasil Diperbarui.\n";
                 found = true;
@@ -1119,6 +1179,7 @@ void deleteDoctor(DoctorNode*& head) {
                     } else {
                         prev->next = temp->next;
                     }
+                    removeDoctorFromHashTable(doctorHashTable, id);
                     delete temp;
                     saveDoctors(doctorHead);
                     cout << "Data Dokter dengan ID " << id << " berhasil dihapus.\n";
@@ -1159,6 +1220,7 @@ void deleteDoctor(DoctorNode*& head) {
                     } else {
                         prev->next = temp->next;
                     }
+                    removeDoctorFromHashTable(doctorHashTable, temp->data.id);
                     delete temp;
                     saveDoctors(doctorHead);
                     cout << "Data Dokter dengan Nama " << name << " berhasil dihapus.\n";
@@ -1189,6 +1251,7 @@ void deleteDoctor(DoctorNode*& head) {
     system("cls");
     doctorManagement();
 }
+
 
 void appointmentScheduling() {
     header();
