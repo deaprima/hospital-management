@@ -205,7 +205,7 @@ void bayarTagihan();
 // ########################################################## MAIN PROGRAM
 int main() {
 
-    // Inisialisasi hash table dokter
+    // Inisialisasi untuk hash table dokter
     for (int i = 0; i < TABLE_SIZE; ++i) {
         doctorHashTable.table[i] = nullptr;
     }
@@ -618,26 +618,26 @@ bool isEmpty(StackNode* top) {
 }
 
 void buildSpecializationGraph() {
-    // Reset the graph
+    // Reset graph
     while (specializationHead != nullptr) {
         SpecializationNode* temp = specializationHead;
         specializationHead = specializationHead->next;
         delete temp;
     }
 
-    // Build the graph
+    // Buat graph
     ExaminationNode* current = examinationHead;
     while (current != nullptr) {
         SpecializationNode* specNode = specializationHead;
         SpecializationNode* prev = nullptr;
 
-        // Check if specialization node already exists
+        // Cek jika node spesialis sudah ada
         while (specNode != nullptr && specNode->specialization != current->data.doctorspecialization) {
             prev = specNode;
             specNode = specNode->next;
         }
 
-        // If specialization node doesn't exist, create it
+        // jika belum ada
         if (specNode == nullptr) {
             SpecializationNode* newSpecNode = new SpecializationNode{current->data.doctorspecialization, nullptr, nullptr};
             if (prev == nullptr) {
@@ -648,14 +648,13 @@ void buildSpecializationGraph() {
             specNode = newSpecNode;
         }
 
-        // Add examination to the specialization node's list
+        // Tambahkan pemeriksaan ke daftar graf spesialisasi
         ExaminationNode* newExaminationNode = new ExaminationNode{current->data, specNode->examinationList};
         specNode->examinationList = newExaminationNode;
 
         current = current->next;
     }
 }
-
 
 void patientManagement(){
     header();
@@ -852,7 +851,6 @@ void searchPatients(PatientNode* head) {
             cout << "Pilihan tidak valid." << endl;
             break;
     }
-
 
     int back;
     do {
@@ -1544,7 +1542,6 @@ void deleteDoctor(DoctorNode*& head) {
     doctorManagement();
 }
 
-
 void appointmentScheduling() {
     header();
     cout <<"#--------------------- PENJADWALAN JANJI TEMU --------------------#"<<endl;
@@ -1592,14 +1589,16 @@ void createAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
     cin >> newAppointment.patientId;
 
     newAppointment.patientName = getPatientNameById(patientHead, newAppointment.patientId);
-    cout << "Nama Pasien: " << newAppointment.patientName << endl;
+    cout << "Nama Pasien    : " << newAppointment.patientName << endl;
     
+    cout << endl;
     cout << "Masukkan ID dokter: ";
     cin >> newAppointment.doctorId;
 
     newAppointment.doctorName = getDoctorNameById(doctorHead, newAppointment.doctorId);
-    cout << "Nama Dokter: " << newAppointment.doctorName << endl;
+    cout << "Nama Dokter    : " << newAppointment.doctorName << endl;
     
+    cout << endl;
     cout << "Masukkan tanggal janji temu (DD-MM-YYYY): ";
     cin >> newAppointment.date;
 
@@ -1631,13 +1630,13 @@ void viewAppointments(AppointmentNode* head) {
     AppointmentNode* current = head;
     while (current != nullptr) {
         Appointment& appointment = current->data;
-        cout << "ID Janji Temu: " << appointment.id << endl;
-        cout << "ID Pasien: " << appointment.patientId << endl;
-        cout << "Nama Pasien: " << appointment.patientName << endl;
-        cout << "ID Dokter: " << appointment.doctorId << endl;
-        cout << "Nama Doktor: " << appointment.doctorName << endl;
-        cout << "Tanggal: " << appointment.date << endl;
-        cout << "Waktu: " << appointment.time << endl;
+        cout << "ID Janji Temu      : " << appointment.id << endl;
+        cout << "ID Pasien          : " << appointment.patientId << endl;
+        cout << "Nama Pasien        : " << appointment.patientName << endl;
+        cout << "ID Dokter          : " << appointment.doctorId << endl;
+        cout << "Nama Doktor        : " << appointment.doctorName << endl;
+        cout << "Tanggal            : " << appointment.date << endl;
+        cout << "Waktu              : " << appointment.time << endl;
         cout << "-----------------------------\n";
         current = current->next;
     }
@@ -1652,7 +1651,6 @@ void viewAppointments(AppointmentNode* head) {
 
     system("cls");
     appointmentScheduling();
-
 }
 
 void editAppointment(AppointmentNode* head) {
@@ -1663,13 +1661,14 @@ void editAppointment(AppointmentNode* head) {
     AppointmentNode* current = head;
     while (current != nullptr) {
         if (current->data.id == id) {
-            cout << "ID Pasien: " << current->data.patientId << "\n";
-            cout << "Nama Pasien: " << current->data.patientName << "\n";
-            cout << "ID Dokter: " << current->data.doctorId << "\n";
-            cout << "Nama Dokter: " << current->data.doctorName << "\n";
-            cout << "Tanggal (saat ini): " << current->data.date << "\n";
-            cout << "Waktu (saat ini): " << current->data.time << "\n";
+            cout << "ID Pasien          : " << current->data.patientId << "\n";
+            cout << "Nama Pasien        : " << current->data.patientName << "\n";
+            cout << "ID Dokter          : " << current->data.doctorId << "\n";
+            cout << "Nama Dokter        : " << current->data.doctorName << "\n";
+            cout << "Tanggal (saat ini) : " << current->data.date << "\n";
+            cout << "Waktu (saat ini)   : " << current->data.time << "\n";
 
+            cout << endl;
             cout << "Masukkan Tanggal baru (DD-MM-YYYY): ";
             cin >> current->data.date;
 
@@ -1790,26 +1789,26 @@ void addExaminationResult() {
 
     newExamination.id = ++lastExaminationId;
 
-    cout << "Masukkan ID Pasien: ";
+    cout << "Masukkan ID Pasien     : ";
     cin >> newExamination.patientId;
 
     newExamination.patientName = getPatientNameById(patientHead, newExamination.patientId);
-    cout << "Nama Pasien: " << newExamination.patientName << endl;
+    cout << "Nama Pasien            : " << newExamination.patientName << endl;
 
-    cout << "Masukkan ID dokter: ";
+    cout << "Masukkan ID dokter     : ";
     cin >> newExamination.doctorId;
 
     newExamination.doctorName = getDoctorNameById(doctorHead, newExamination.doctorId);
-    cout << "Nama Dokter: " << newExamination.doctorName << endl;
+    cout << "Nama Dokter            : " << newExamination.doctorName << endl;
 
     newExamination.doctorspecialization = getDoctorSpecializationById(doctorHead, newExamination.doctorId);
-    cout << "specialization: " << newExamination.doctorspecialization << endl;
+    cout << "specialization         : " << newExamination.doctorspecialization << endl;
 
-    cout << "Masukkan Diagnosis: ";
+    cout << "Masukkan Diagnosis     : ";
     cin.ignore(); 
     getline(cin, newExamination.diagnosis); 
 
-    cout << "Masukkan Pengobatan: ";
+    cout << "Masukkan Pengobatan    : ";
     getline(cin, newExamination.treatment);
 
     addExamination(examinationHead, newExamination);
@@ -1870,14 +1869,14 @@ void viewMedicalHistory() {
 void displayAllExaminations() {
     ExaminationNode* current = examinationHead;
     while (current != nullptr) {
-        cout << "ID Pemeriksaan: " << current->data.id << endl;
-        cout << "ID Pasien: " << current->data.patientId << endl;
-        cout << "Nama Pasien: " << current->data.patientName << endl;
-        cout << "ID Dokter: " << current->data.doctorId << endl;
-        cout << "Nama Dokter: " << current->data.doctorName << endl;
-        cout << "Spesialisasi Dokter: " << current->data.doctorspecialization << endl;
-        cout << "Diagnosis: " << current->data.diagnosis << endl;
-        cout << "Pengobatan: " << current->data.treatment << endl;
+        cout << "ID Pemeriksaan         : " << current->data.id << endl;
+        cout << "ID Pasien              : " << current->data.patientId << endl;
+        cout << "Nama Pasien            : " << current->data.patientName << endl;
+        cout << "ID Dokter              : " << current->data.doctorId << endl;
+        cout << "Nama Dokter            : " << current->data.doctorName << endl;
+        cout << "Spesialisasi Dokter    : " << current->data.doctorspecialization << endl;
+        cout << "Diagnosis              : " << current->data.diagnosis << endl;
+        cout << "Pengobatan             : " << current->data.treatment << endl;
         cout << "-----------------------------" << endl;
         current = current->next;
     }
@@ -1915,14 +1914,14 @@ void displaySpecializationGraph() {
     // Display examinations for the chosen specialization
     ExaminationNode* examNode = current->examinationList;
     while (examNode != nullptr) {
-        cout << "ID Pemeriksaan: " << examNode->data.id << endl;
-        cout << "ID Pasien: " << examNode->data.patientId << endl;
-        cout << "Nama Pasien: " << examNode->data.patientName << endl;
-        cout << "ID Dokter: " << examNode->data.doctorId << endl;
-        cout << "Nama Dokter: " << examNode->data.doctorName << endl;
-        cout << "Spesialisasi Dokter: " << examNode->data.doctorspecialization << endl;
-        cout << "Diagnosis: " << examNode->data.diagnosis << endl;
-        cout << "Pengobatan: " << examNode->data.treatment << endl;
+        cout << "ID Pemeriksaan         : " << examNode->data.id << endl;
+        cout << "ID Pasien              : " << examNode->data.patientId << endl;
+        cout << "Nama Pasien            : " << examNode->data.patientName << endl;
+        cout << "ID Dokter              : " << examNode->data.doctorId << endl;
+        cout << "Nama Dokter            : " << examNode->data.doctorName << endl;
+        cout << "Spesialisasi Dokter    : " << examNode->data.doctorspecialization << endl;
+        cout << "Diagnosis              : " << examNode->data.diagnosis << endl;
+        cout << "Pengobatan             : " << examNode->data.treatment << endl;
         cout << "-----------------------------" << endl;
         examNode = examNode->next;
     }
@@ -1940,17 +1939,18 @@ void editExaminationResult() {
     ExaminationNode* current = examinationHead;
     while (current != nullptr) {
         if (current->data.id == id) {
-            cout << "ID Pasien: " << current->data.patientId << "\n";
-            cout << "Nama Pasien: " << current->data.patientName << "\n";
-            cout << "ID Dokter: " << current->data.doctorId << "\n";
-            cout << "Nama Dokter: " << current->data.doctorName << "\n";
-            cout << "specialization Dokter: " << current->data.doctorspecialization << endl;
+            cout << "ID Pasien              : " << current->data.patientId << "\n";
+            cout << "Nama Pasien            : " << current->data.patientName << "\n";
+            cout << "ID Dokter              : " << current->data.doctorId << "\n";
+            cout << "Nama Dokter            : " << current->data.doctorName << "\n";
+            cout << "specialization Dokter  : " << current->data.doctorspecialization << endl;
 
-            cout << "Masukkan Diagnosis Baru: ";
+            cout << endl;
+            cout << "Masukkan Diagnosis Baru    : ";
             cin.ignore();
             getline(cin, current->data.diagnosis);
 
-            cout << "Masukkan Pengobatan Baru: ";
+            cout << "Masukkan Pengobatan Baru   : ";
             getline(cin, current->data.treatment);
 
             cout << "Hasil pemeriksaan berhasil diperbarui." << endl;
@@ -2071,15 +2071,18 @@ void undoLastOperation() {
 }
 
 void billingandPayment() {
+    header();
+    cout <<"#---------------- BILLING & PEMBAYARAN ----------------#"<<endl;
+    cout << endl;
+    
     int pilihan;
     do {
-        cout << "\nMenu Billing dan Pembayaran:" << endl;
         cout << "1. Buat Tagihan Baru" << endl;
         cout << "2. Lihat Daftar Tagihan" << endl;
         cout << "3. Cari Tagihan" << endl;
         cout << "4. Edit Tagihan" << endl;
         cout << "5. Bayar Tagihan" << endl;
-        cout << "6. Keluar" << endl;
+        cout << "0. Keluar" << endl;
         cout << "Masukkan pilihan: ";
         cin >> pilihan;
 
@@ -2099,18 +2102,23 @@ void billingandPayment() {
             case 5:
                 bayarTagihan();
                 break;
-            case 6:
+            case 0:
+                mainMenu();
                 break;
             default:
                 cout << "\nPilihan tidak valid. Silakan coba lagi." << endl;
         }
-    } while (pilihan != 6);
+    } while (pilihan != 0);
 }
 
 void buatTagihanBaru() {
+    header();
+    cout <<"#---------------- BUAT TAGIHAN BARU ----------------#"<<endl;
+    cout << endl;
+
     Tagihan tagihanBaru;
     
-    cout << "\nMasukkan ID tagihan\t\t: ";
+    cout << "\nMasukkan ID tagihan : ";
     cin >> tagihanBaru.id;
     cin.ignore(); 
 
@@ -2123,14 +2131,14 @@ void buatTagihanBaru() {
         temp = temp->next;
     }
 
-    cout << "Masukkan nama pasien \t\t: ";
+    cout << "Masukkan nama pasien           : ";
     getline(cin, tagihanBaru.namaPasien);
-    cout << "Masukkan layanan\t\t: ";
+    cout << "Masukkan layanan               : ";
     getline(cin, tagihanBaru.layanan);
-    cout << "Masukkan jumlah tagihan\t\t: ";
+    cout << "Masukkan jumlah tagihan        : ";
     cin >> tagihanBaru.jumlah;
     cin.ignore();
-    cout << "Masukkan tanggal (YYYY-MM-DD)\t: ";
+    cout << "Masukkan tanggal (YYYY-MM-DD)  : ";
     getline(cin, tagihanBaru.tanggal);
 
     Node* newNode = new Node;
@@ -2151,6 +2159,10 @@ void buatTagihanBaru() {
 }
 
 void lihatDaftarTagihan() {
+    header();
+    cout <<"#-------------- LIHAT DAFTAR TAGIHAN --------------#"<<endl;
+    cout << endl;
+
     if (head == nullptr) {
         cout << "\nTidak ada tagihan yang tersimpan." << endl;
     return;
@@ -2163,30 +2175,38 @@ void lihatDaftarTagihan() {
     cout << "\nDaftar Tagihan" << endl;
     while (temp != nullptr) {
         Tagihan tagihanSaatIni = temp->data;
-        cout << "ID\t\t: " << tagihanSaatIni.id << "\nNama Pasien\t: " << tagihanSaatIni.namaPasien
-             << " \nLayanan\t\t: " << tagihanSaatIni.layanan << " \nJumlah\t\t: Rp" << tagihanSaatIni.jumlah
-             << " \nTanggal\t\t: " << tagihanSaatIni.tanggal << endl;
+        cout << "ID             : " << tagihanSaatIni.id 
+            << "\nNama Pasien   : " << tagihanSaatIni.namaPasien
+            << "\nLayanan       : " << tagihanSaatIni.layanan 
+            << "\nJumlah        : Rp" << tagihanSaatIni.jumlah
+            << "\nTanggal       : " << tagihanSaatIni.tanggal << endl;
         temp = temp->next;
     }
 }
 
 bool cariTagihanRekursif(Node* temp, int idCari, string namaCari) {
-  if (temp == nullptr) {
-    return false; 
-  }
+    if (temp == nullptr) {
+        return false; 
+    }
 
-  if (temp->data.id == idCari || temp->data.namaPasien == namaCari) {
-    cout << "\nTagihan ditemukan\t\t:" << endl;
-    cout << "\nID\t\t: " << temp->data.id << "\nNama Pasien\t: " << temp->data.namaPasien
-         << " \nLayanan\t\t: " << temp->data.layanan << " \nJumlah\t\t: Rp" << temp->data.jumlah
-         << " \nTanggal\t\t: " << temp->data.tanggal << endl;
-    return true; 
-  }
+    if (temp->data.id == idCari || temp->data.namaPasien == namaCari) {
+        cout << "\nTagihan ditemukan\t\t:" << endl;
+        cout<< "\nID            : " << temp->data.id 
+            << "\nNama Pasien   : " << temp->data.namaPasien
+            << "\nLayanan       : " << temp->data.layanan 
+            << "\nJumlah        : Rp" << temp->data.jumlah
+            << "\nTanggal       : " << temp->data.tanggal << endl;
+        return true; 
+    }
 
-  return cariTagihanRekursif(temp->next, idCari, namaCari);
+    return cariTagihanRekursif(temp->next, idCari, namaCari);
 }
 
 void cariTagihan() {
+    header();
+    cout <<"#---------------- CARI TAGIHAN ----------------#"<<endl;
+    cout << endl;
+
     if (head == nullptr) {
         cout << "\nTidak ada tagihan yang tersimpan untuk dicari." << endl;
         return;
@@ -2197,13 +2217,17 @@ void cariTagihan() {
     cin >> idCari;
     cin.ignore(); 
 
-   bool ditemukan = cariTagihanRekursif(head, idCari, namaCari);
-  if (!ditemukan) {
-    cout << "Tagihan tidak ditemukan." << endl;
-  }
+    bool ditemukan = cariTagihanRekursif(head, idCari, namaCari);
+    if (!ditemukan) {
+        cout << "Tagihan tidak ditemukan." << endl;
+    }
 }
 
 void editTagihan() {
+    header();
+    cout <<"#---------------- EDIT TAGIHAN  ----------------#"<<endl;
+    cout << endl;
+
     if (head == nullptr) {
         cout << "\nTidak ada tagihan yang tersimpan untuk diedit." << endl;
         return;
@@ -2219,16 +2243,16 @@ void editTagihan() {
         Tagihan& tagihanSaatIni = temp->data;
         if (tagihanSaatIni.id == idEdit) {
             ditemukan = true;
-            cout << "Masukkan nama pasien baru\t\t: ";
+            cout << "Masukkan nama pasien baru  : ";
             cin.ignore(); 
             getline(cin, tagihanSaatIni.namaPasien);
-            cout << "Masukkan layanan baru\t\t\t: ";
+            cout << "Masukkan layanan baru      : ";
             cin.ignore(); 
             getline(cin, tagihanSaatIni.layanan);
-            cout << "Masukkan jumlah baru\t\t\t: ";
+            cout << "Masukkan jumlah baru       : ";
             cin >> tagihanSaatIni.jumlah;
             cin.ignore();
-            cout << "Masukkan tanggal baru (YYYY-MM-DD)\t: ";
+            cout << "Masukkan tanggal baru (YYYY-MM-DD) : ";
             getline(cin, tagihanSaatIni.tanggal);
             cout << "Tagihan berhasil diperbarui!" << endl;
             break;
@@ -2242,6 +2266,10 @@ void editTagihan() {
 }
 
 void bayarTagihan() {
+    header();
+    cout <<"#-------------------- PEMBAYARAN --------------------#"<<endl;
+    cout << endl;
+
     if (head == nullptr) {
         cout << "Tidak ada tagihan yang tersimpan." << endl;
         return;
@@ -2257,8 +2285,8 @@ void bayarTagihan() {
     while (temp != nullptr) {
         if (temp->data.id == id) {
             found = true;
-            cout << "Biaya Tagihan\t: Rp" << temp->data.jumlah << endl;
-            cout << "Nama \t\t: " << temp->data.namaPasien << endl;
+            cout << "Biaya Tagihan  : Rp" << temp->data.jumlah << endl;
+            cout << "Nama           : " << temp->data.namaPasien << endl;
 
             char konfirmasi;
             cout << "Apakah Anda ingin membayar tagihan ini? (y/n): ";

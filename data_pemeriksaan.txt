@@ -1,1 +1,3 @@
 1,21,marcel,135,Dr.Andi,Umum,demam,istirahat
+1,24,udin,681,Dr.Prita,Gigi,karang gigi,pembersihan
+1,98,mamat,225,Dr.Kris,THT,budek,suntik
