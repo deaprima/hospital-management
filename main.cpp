@@ -49,7 +49,7 @@ struct Tagihan {
     int id;
     string namaPasien;
     string layanan;
-    double jumlah;
+    long long jumlah;
     string tanggal;
     bool sudahDibayar = false;
 };
@@ -2121,8 +2121,7 @@ void simpanKeBill() {
                  << temp->data.namaPasien << ","
                  << temp->data.layanan << ","
                  << temp->data.jumlah << ","
-                 << temp->data.tanggal << ","
-                 << temp->data.sudahDibayar << endl;
+                 << temp->data.tanggal << endl;
             temp = temp->next;
         }
         file.close();
