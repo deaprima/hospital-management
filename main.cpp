@@ -2165,8 +2165,19 @@ void lihatDaftarTagihan() {
 
     if (head == nullptr) {
         cout << "\nTidak ada tagihan yang tersimpan." << endl;
-    return;
+        
+        int back;
+        do {
+            cout << endl;
+            cout << "0. Kembali\n";
+            cout << "Pilih opsi: ";
+            cin >> back;
+        } while (back != 0);
+
+        system("cls");
+        billingandPayment();    
     }
+
     Node* temp = head;
     if (temp == nullptr) {
         cout << "\nTidak ada tagihan yang ditemukan." << endl;
@@ -2208,9 +2219,20 @@ void cariTagihan() {
     cout << endl;
 
     if (head == nullptr) {
-        cout << "\nTidak ada tagihan yang tersimpan untuk dicari." << endl;
-        return;
+        cout << "\nTidak ada tagihan yang tersimpan untuk dicari." << endl;      
+        
+        int back;
+        do {
+            cout << endl;
+            cout << "0. Kembali\n";
+            cout << "Pilih opsi: ";
+            cin >> back;
+        } while (back != 0);
+
+        system("cls");
+        billingandPayment();    
     }
+
     int idCari;
     string namaCari;
     cout << "\nMasukkan ID tagihan yang ingin dicari\t: ";
@@ -2220,7 +2242,20 @@ void cariTagihan() {
     bool ditemukan = cariTagihanRekursif(head, idCari, namaCari);
     if (!ditemukan) {
         cout << "Tagihan tidak ditemukan." << endl;
+        
+        int back;
+        do {
+            cout << endl;
+            cout << "0. Kembali\n";
+            cout << "Pilih opsi: ";
+            cin >> back;
+        } while (back != 0);
+
+        system("cls");
+        billingandPayment();  
+
     }
+
 }
 
 void editTagihan() {
@@ -2230,7 +2265,17 @@ void editTagihan() {
 
     if (head == nullptr) {
         cout << "\nTidak ada tagihan yang tersimpan untuk diedit." << endl;
-        return;
+        
+        int back;
+        do {
+            cout << endl;
+            cout << "0. Kembali\n";
+            cout << "Pilih opsi: ";
+            cin >> back;
+        } while (back != 0);
+
+        system("cls");
+        billingandPayment();    
     }
 
     int idEdit;
@@ -2262,6 +2307,17 @@ void editTagihan() {
 
     if (!ditemukan) {
         cout << "Tagihan tidak ditemukan." << endl;
+
+        int back;
+        do {
+            cout << endl;
+            cout << "0. Kembali\n";
+            cout << "Pilih opsi: ";
+            cin >> back;
+        } while (back != 0);
+
+        system("cls");
+        billingandPayment();  
     }
 }
 
@@ -2272,7 +2328,17 @@ void bayarTagihan() {
 
     if (head == nullptr) {
         cout << "Tidak ada tagihan yang tersimpan." << endl;
-        return;
+        
+        int back;
+        do {
+            cout << endl;
+            cout << "0. Kembali\n";
+            cout << "Pilih opsi: ";
+            cin >> back;
+        } while (back != 0);
+
+        system("cls");
+        billingandPayment();    
     }
 
     int id;
@@ -2313,6 +2379,15 @@ void bayarTagihan() {
 
     if (!found) {
         cout << "Tagihan tidak ditemukan." << endl;
-        return;
+        int back;
+        do {
+            cout << endl;
+            cout << "0. Kembali\n";
+            cout << "Pilih opsi: ";
+            cin >> back;
+        } while (back != 0);
+
+        system("cls");
+        billingandPayment();  
     }
 }
