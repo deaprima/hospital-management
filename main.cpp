@@ -107,6 +107,12 @@ struct StackNode {
     StackNode* next;
 };
 
+struct SpecializationNode {
+    string specialization;
+    ExaminationNode* examinationList;
+    SpecializationNode* next;
+};
+
 // Ukuran hash table
 const int TABLE_SIZE = 100;
 
@@ -123,6 +129,7 @@ PatientTreeNode* patientRoot = nullptr;
 Node* head = nullptr; 
 HashTable doctorHashTable;
 ExaminationNode* examinationHead = nullptr;
+SpecializationNode* specializationHead = nullptr;
 StackNode* operationStack = nullptr;
 
 int lastAppointmentId = 0;
@@ -182,6 +189,9 @@ void viewMedicalHistory();
 void editExaminationResult();
 void deleteExaminationResult();
 void undoLastOperation();
+void buildSpecializationGraph();
+void displaySpecializationGraph();
+void displayAllExaminations();
 
 void billingandPayment();
 void buatTagihanBaru();
@@ -605,6 +615,45 @@ Operation pop(StackNode*& top) {
 
 bool isEmpty(StackNode* top) {
     return top == nullptr;
+}
+
+void buildSpecializationGraph() {
+    // Reset the graph
+    while (specializationHead != nullptr) {
+        SpecializationNode* temp = specializationHead;
+        specializationHead = specializationHead->next;
+        delete temp;
+    }
+
+    // Build the graph
+    ExaminationNode* current = examinationHead;
+    while (current != nullptr) {
+        SpecializationNode* specNode = specializationHead;
+        SpecializationNode* prev = nullptr;
+
+        // Check if specialization node already exists
+        while (specNode != nullptr && specNode->specialization != current->data.doctorspecialization) {
+            prev = specNode;
+            specNode = specNode->next;
+        }
+
+        // If specialization node doesn't exist, create it
+        if (specNode == nullptr) {
+            SpecializationNode* newSpecNode = new SpecializationNode{current->data.doctorspecialization, nullptr, nullptr};
+            if (prev == nullptr) {
+                specializationHead = newSpecNode;
+            } else {
+                prev->next = newSpecNode;
+            }
+            specNode = newSpecNode;
+        }
+
+        // Add examination to the specialization node's list
+        ExaminationNode* newExaminationNode = new ExaminationNode{current->data, specNode->examinationList};
+        specNode->examinationList = newExaminationNode;
+
+        current = current->next;
+    }
 }
 
 
@@ -1788,30 +1837,95 @@ void viewMedicalHistory() {
     cout <<"#----------------- RIWAYAT HASIL PEMERIKSAAN ------------------#"<<endl;
     cout << endl;
 
-    ExaminationNode* current = examinationHead;
-    while (current != nullptr) {
-        cout << "ID Pemeriksaan: " << current->data.id << endl;
-        cout << "ID Pasien: " << current->data.patientId << endl;
-        cout << "Nama Pasien: " << current->data.doctorName << endl;
-        cout << "ID Dokter: " << current->data.doctorId << endl;
-        cout << "Nama Dokter: " << current->data.doctorName << endl;
-        cout << "Specialization Dokter: " << current->data.doctorspecialization << endl;
-        cout << "Diagnosis: " << current->data.diagnosis << endl;
-        cout << "Pengobatan: " << current->data.treatment << endl;
-        cout << "-----------------------------" << endl;
-        current = current->next;
+    int choice;
+    cout << "1. Tampilkan Semua Pemeriksaan\n";
+    cout << "2. Tampilkan Pemeriksaan Berdasarkan Spesialisasi\n";
+    cout << "Pilih opsi: ";
+    cin >> choice;
+
+    switch (choice) {
+        case 1:
+            displayAllExaminations();
+            break;
+        case 2:
+            buildSpecializationGraph();
+            displaySpecializationGraph();
+            break;
+        default:
+            cout << "Pilihan tidak valid." << endl;
     }
 
     int back;
     do {
         cout << endl;
-        cout << "0.Kembali\n";
+        cout << "0. Kembali\n";
         cout << "Pilih opsi: ";
         cin >> back;
     } while (back != 0);
 
     system("cls");
     examinationAndTreatment();
+}
+
+void displayAllExaminations() {
+    ExaminationNode* current = examinationHead;
+    while (current != nullptr) {
+        cout << "ID Pemeriksaan: " << current->data.id << endl;
+        cout << "ID Pasien: " << current->data.patientId << endl;
+        cout << "Nama Pasien: " << current->data.patientName << endl;
+        cout << "ID Dokter: " << current->data.doctorId << endl;
+        cout << "Nama Dokter: " << current->data.doctorName << endl;
+        cout << "Spesialisasi Dokter: " << current->data.doctorspecialization << endl;
+        cout << "Diagnosis: " << current->data.diagnosis << endl;
+        cout << "Pengobatan: " << current->data.treatment << endl;
+        cout << "-----------------------------" << endl;
+        current = current->next;
+    }
+}
+
+void displaySpecializationGraph() {
+    SpecializationNode* current = specializationHead;
+    int choice;
+    int index = 1;
+
+    // Display available specializations
+    cout << "Daftar Spesialisasi Dokter:\n";
+    while (current != nullptr) {
+        cout << index++ << ". " << current->specialization << endl;
+        current = current->next;
+    }
+
+    cout << "Pilih spesialisasi (nomor): ";
+    cin >> choice;
+
+    current = specializationHead;
+    index = 1;
+
+    // Find the chosen specialization
+    while (current != nullptr && index < choice) {
+        current = current->next;
+        index++;
+    }
+
+    if (current == nullptr) {
+        cout << "Pilihan tidak valid." << endl;
+        return;
+    }
+
+    // Display examinations for the chosen specialization
+    ExaminationNode* examNode = current->examinationList;
+    while (examNode != nullptr) {
+        cout << "ID Pemeriksaan: " << examNode->data.id << endl;
+        cout << "ID Pasien: " << examNode->data.patientId << endl;
+        cout << "Nama Pasien: " << examNode->data.patientName << endl;
+        cout << "ID Dokter: " << examNode->data.doctorId << endl;
+        cout << "Nama Dokter: " << examNode->data.doctorName << endl;
+        cout << "Spesialisasi Dokter: " << examNode->data.doctorspecialization << endl;
+        cout << "Diagnosis: " << examNode->data.diagnosis << endl;
+        cout << "Pengobatan: " << examNode->data.treatment << endl;
+        cout << "-----------------------------" << endl;
+        examNode = examNode->next;
+    }
 }
 
 void editExaminationResult() {
