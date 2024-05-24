@@ -49,9 +49,9 @@ struct Tagihan {
     int id;
     string namaPasien;
     string layanan;
-    long long jumlah;
+    double jumlah;
     string tanggal;
-    bool sudahDibayar;  
+    bool sudahDibayar = false;
 };
 
 struct Node {
@@ -194,6 +194,7 @@ void displaySpecializationGraph();
 void displayAllExaminations();
 
 void billingandPayment();
+void simpanKeBill();
 void buatTagihanBaru();
 void lihatDaftarTagihan();
 bool cariTagihanRekursif(Node* temp, int idCari, string namaCari);
@@ -2111,6 +2112,25 @@ void billingandPayment() {
     } while (pilihan != 0);
 }
 
+void simpanKeBill() {
+    ofstream file("bill.txt");
+    if (file.is_open()) {
+        Node* temp = head;
+        while (temp != nullptr) {
+            file << temp->data.id << ","
+                 << temp->data.namaPasien << ","
+                 << temp->data.layanan << ","
+                 << temp->data.jumlah << ","
+                 << temp->data.tanggal << ","
+                 << temp->data.sudahDibayar << endl;
+            temp = temp->next;
+        }
+        file.close();
+    } else {
+        cout << "Gagal membuka file untuk menyimpan data." << endl;
+    }
+}
+
 void buatTagihanBaru() {
     header();
     cout <<"#---------------- BUAT TAGIHAN BARU ----------------#"<<endl;
@@ -2156,6 +2176,7 @@ void buatTagihanBaru() {
     }
 
     cout << "\nTagihan berhasil dibuat!" << endl;
+    simpanKeBill();
 }
 
 void lihatDaftarTagihan() {
@@ -2292,7 +2313,6 @@ void editTagihan() {
             cin.ignore(); 
             getline(cin, tagihanSaatIni.namaPasien);
             cout << "Masukkan layanan baru      : ";
-            cin.ignore(); 
             getline(cin, tagihanSaatIni.layanan);
             cout << "Masukkan jumlah baru       : ";
             cin >> tagihanSaatIni.jumlah;
@@ -2300,6 +2320,7 @@ void editTagihan() {
             cout << "Masukkan tanggal baru (YYYY-MM-DD) : ";
             getline(cin, tagihanSaatIni.tanggal);
             cout << "Tagihan berhasil diperbarui!" << endl;
+            simpanKeBill();
             break;
         }
         temp = temp->next;
@@ -2367,6 +2388,7 @@ void bayarTagihan() {
                     prev->next = temp->next;
                 }
                 delete temp;
+                simpanKeBill();
                 return;
             } else {
                 cout << "Pembayaran dibatalkan." << endl;
