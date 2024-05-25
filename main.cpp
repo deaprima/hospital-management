@@ -51,7 +51,7 @@ struct Tagihan {
     string layanan;
     long long jumlah;
     string tanggal;
-    bool sudahDibayar = false;
+    bool sudahDibayar;
 };
 
 struct Node {
