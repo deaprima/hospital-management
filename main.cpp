@@ -196,7 +196,6 @@ void displayAllExaminations();
 void loadTagihanDariBill();
 void billingandPayment();
 void simpanKeBill();
-void tambahTagihan();
 void buatTagihanBaru();
 void lihatDaftarTagihan();
 bool cariTagihanRekursif(Node* temp, int idCari, string namaCari);
@@ -2177,53 +2176,6 @@ void simpanKeBill() {
     } else {
         cout << "Gagal membuka file untuk menyimpan data." << endl;
     }
-}
-
-void tambahTagihan() {
-    Tagihan tagihanBaru;
-
-    cout << "Masukkan ID tagihan            : ";
-    cin >> tagihanBaru.id;
-    cin.ignore(); 
-
-    Node* temp = head;
-    while (temp != nullptr) {
-        if (temp->data.id == tagihanBaru.id) {
-            cout << "ID tagihan sudah ada. Silakan masukkan ID lain.\n";
-            return; 
-        }
-        temp = temp->next;
-    }
-
-    cout << "Masukkan nama pasien           : ";
-    getline(cin, tagihanBaru.namaPasien);
-    cout << "Masukkan layanan               : ";
-    getline(cin, tagihanBaru.layanan);
-    cout << "Masukkan jumlah tagihan        : ";
-    cin >> tagihanBaru.jumlah;
-    cin.ignore();
-    cout << "Masukkan tanggal (YYYY-MM-DD)  : ";
-    getline(cin, tagihanBaru.tanggal);
-
-    tagihanBaru.sudahDibayar = false;
-
-    Node* newNode = new Node;
-    newNode->data = tagihanBaru;
-    newNode->next = nullptr;
-
-    if (head == nullptr) {
-        head = newNode;
-    } else { 
-        Node* temp = head;
-        while (temp->next != nullptr) {
-            temp = temp->next;
-        }
-        temp->next = newNode;
-    }
-
-    cout << "\nTagihan berhasil dibuat!" << endl;
-    simpanKeBill();
-
 }
 
 void buatTagihanBaru() {
