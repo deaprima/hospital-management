@@ -227,8 +227,6 @@ int main() {
     saveAppointments(appointmentHead);
     saveExaminations(examinationHead);
 
-
-
     return 0;
 }
 
