@@ -226,6 +226,7 @@ int main() {
     saveDoctors(doctorHead);
     saveAppointments(appointmentHead);
     saveExaminations(examinationHead);
+    simpanKeBill();
 
     return 0;
 }
@@ -710,17 +711,17 @@ void registPatient(PatientNode*& head) {
     cout << endl;
 
     Patient p;
-    cout << "Masukkan ID Pasien: ";
+    cout << "Masukkan ID Pasien     : ";
     cin >> p.id;
 
-    cout << "Masukkan Nama Pasien: ";
+    cout << "Masukkan Nama Pasien   : ";
     cin.ignore(); 
     getline(cin, p.name); 
 
-    cout << "Masukkan Umur Pasien: ";
+    cout << "Masukkan Umur Pasien   : ";
     cin >> p.age;
 
-    cout << "Masukkan Alamat Pasien: ";
+    cout << "Masukkan Alamat Pasien : ";
     cin.ignore(); 
     getline(cin, p.address);
 
@@ -1080,14 +1081,14 @@ void deletePatient(PatientNode*& head) {
         bool found = false;
         while (temp != nullptr) {
             if (temp->data.name == name) {
-                // Menampilkan data pasien yang akan dihapus
+                
                 cout << "Data Pasien yang akan dihapus:\n";
                 cout << "ID         : " << temp->data.id << endl;
                 cout << "Nama       : " << temp->data.name << endl;
                 cout << "Umur       : " << temp->data.age << endl;
                 cout << "Alamat     : " << temp->data.address << endl;
 
-                // Meminta konfirmasi pengguna
+                
                 char confirm;
                 cout << "Apakah Anda yakin ingin menghapus data ini? (y/n): ";
                 cin >> confirm;
@@ -1177,14 +1178,14 @@ void registDoctor(DoctorNode*& head) {
     cout << endl;
 
     Doctor d;
-    cout << "Masukkan ID Dokter: ";
+    cout << "Masukkan ID Dokter             : ";
     cin >> d.id;
 
-    cout << "Masukkan Nama Dokter: ";
+    cout << "Masukkan Nama Dokter           : ";
     cin.ignore(); 
     getline(cin, d.name); 
 
-    cout << "Masukkan Spesialisasi Dokter: ";
+    cout << "Masukkan Spesialisasi Dokter   : ";
     getline(cin, d.specialization);
 
     addDoctor(head, d);
@@ -1590,24 +1591,22 @@ void createAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
 
     newAppointment.id = ++lastAppointmentId;
 
-    cout << "Masukkan ID pasien: ";
+    cout << "Masukkan ID pasien     : ";
     cin >> newAppointment.patientId;
 
     newAppointment.patientName = getPatientNameById(patientHead, newAppointment.patientId);
-    cout << "Nama Pasien    : " << newAppointment.patientName << endl;
+    cout << "Nama Pasien            : " << newAppointment.patientName << endl;
     
-    cout << endl;
-    cout << "Masukkan ID dokter: ";
+    cout << "Masukkan ID dokter     : ";
     cin >> newAppointment.doctorId;
 
     newAppointment.doctorName = getDoctorNameById(doctorHead, newAppointment.doctorId);
-    cout << "Nama Dokter    : " << newAppointment.doctorName << endl;
+    cout << "Nama Dokter            : " << newAppointment.doctorName << endl;
     
-    cout << endl;
-    cout << "Masukkan tanggal janji temu (DD-MM-YYYY): ";
+    cout << "Masukkan tanggal janji temu (DD-MM-YYYY)   : ";
     cin >> newAppointment.date;
 
-    cout << "Masukkan waktu janji temu (HH:MM): ";
+    cout << "Masukkan waktu janji temu (HH:MM)          : ";
     cin >> newAppointment.time;
 
     addAppointment(head, tail, newAppointment);
@@ -1659,6 +1658,10 @@ void viewAppointments(AppointmentNode* head) {
 }
 
 void editAppointment(AppointmentNode* head) {
+    header();
+    cout <<"#------------------------ EDIT JANJI TEMU ------------------------#"<<endl;
+    cout << endl;
+
     int id;
     cout << "Masukkan ID janji temu yang ingin diedit: ";
     cin >> id;
@@ -1674,10 +1677,10 @@ void editAppointment(AppointmentNode* head) {
             cout << "Waktu (saat ini)   : " << current->data.time << "\n";
 
             cout << endl;
-            cout << "Masukkan Tanggal baru (DD-MM-YYYY): ";
+            cout << "Masukkan Tanggal baru (DD-MM-YYYY) : ";
             cin >> current->data.date;
 
-            cout << "Masukkan Waktu baru (HH:MM): ";
+            cout << "Masukkan Waktu baru (HH:MM)        : ";
             cin >> current->data.time;
 
             cout << "Janji temu berhasil diupdate.\n";
@@ -1701,6 +1704,10 @@ void editAppointment(AppointmentNode* head) {
 }
 
 void cancelAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
+    header();
+    cout <<"#----------------------- BATAL JANJI TEMU -----------------------#"<<endl;
+    cout << endl;
+    
     int id;
     cout << "Masukkan ID janji temu yang ingin dibatalkan: ";
     cin >> id;
@@ -2077,7 +2084,7 @@ void undoLastOperation() {
 
 void billingandPayment() {
     header();
-    cout <<"#---------------- BILLING & PEMBAYARAN ----------------#"<<endl;
+    cout <<"#--------------------- BILLING & PEMBAYARAN ----------------------#"<<endl;
     cout << endl;
     
     int pilihan;
@@ -2087,7 +2094,9 @@ void billingandPayment() {
         cout << "3. Cari Tagihan" << endl;
         cout << "4. Edit Tagihan" << endl;
         cout << "5. Bayar Tagihan" << endl;
-        cout << "0. Keluar" << endl;
+        cout << "0. Kembali" << endl;
+
+        cout << endl;
         cout << "Masukkan pilihan: ";
         cin >> pilihan;
 
@@ -2172,11 +2181,8 @@ void simpanKeBill() {
 
 void tambahTagihan() {
     Tagihan tagihanBaru;
-    header();
-    cout <<"#---------------- BUAT TAGIHAN BARU ----------------#"<<endl;
-    cout << endl;
 
-    cout << "\nMasukkan ID tagihan : ";
+    cout << "Masukkan ID tagihan            : ";
     cin >> tagihanBaru.id;
     cin.ignore(); 
 
@@ -2217,16 +2223,16 @@ void tambahTagihan() {
 
     cout << "\nTagihan berhasil dibuat!" << endl;
     simpanKeBill();
+
 }
 
 void buatTagihanBaru() {
     header();
-    cout <<"#---------------- BUAT TAGIHAN BARU ----------------#"<<endl;
+    cout <<"#----------------------- BUAT TAGIHAN BARU -----------------------#"<<endl;
     cout << endl;
 
-    Tagihan tagihanBaru;
-    
-    cout << "\nMasukkan ID tagihan : ";
+    Tagihan tagihanBaru;    
+    cout << "Masukkan ID tagihan            : ";
     cin >> tagihanBaru.id;
     cin.ignore(); 
 
@@ -2265,11 +2271,22 @@ void buatTagihanBaru() {
 
     cout << "\nTagihan berhasil dibuat!" << endl;
     simpanKeBill();
+
+    int back;
+    do {
+        cout << endl;
+        cout << "0.Kembali\n";
+        cout << "Pilih opsi: ";
+        cin >> back;
+    } while (back != 0);
+
+    system("cls");
+    billingandPayment();
 }
 
 void lihatDaftarTagihan() {
     header();
-    cout <<"#-------------- LIHAT DAFTAR TAGIHAN --------------#"<<endl;
+    cout <<"#---------------------- LIHAT DAFTAR TAGIHAN ---------------------#"<<endl;
     cout << endl;
 
     if (head == nullptr) {
@@ -2292,7 +2309,7 @@ void lihatDaftarTagihan() {
         cout << "\nTidak ada tagihan yang ditemukan." << endl;
         return;
     }
-    cout << "\nDaftar Tagihan" << endl;
+    
     while (temp != nullptr) {
         Tagihan tagihanSaatIni = temp->data;
         cout << "ID             : " << tagihanSaatIni.id 
@@ -2300,8 +2317,20 @@ void lihatDaftarTagihan() {
             << "\nLayanan       : " << tagihanSaatIni.layanan 
             << "\nJumlah        : Rp" << tagihanSaatIni.jumlah
             << "\nTanggal       : " << tagihanSaatIni.tanggal << endl;
+        cout << "----------------------------"<< endl;
         temp = temp->next;
     }
+
+    int back;
+    do {
+        cout << endl;
+        cout << "0.Kembali\n";
+        cout << "Pilih opsi: ";
+        cin >> back;
+    } while (back != 0);
+
+    system("cls");
+    billingandPayment();
 }
 
 bool cariTagihanRekursif(Node* temp, int idCari, string namaCari) {
