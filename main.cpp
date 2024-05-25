@@ -193,8 +193,10 @@ void buildSpecializationGraph();
 void displaySpecializationGraph();
 void displayAllExaminations();
 
+void loadTagihanDariBill();
 void billingandPayment();
 void simpanKeBill();
+void tambahTagihan();
 void buatTagihanBaru();
 void lihatDaftarTagihan();
 bool cariTagihanRekursif(Node* temp, int idCari, string namaCari);
@@ -216,6 +218,7 @@ int main() {
     loadDoctors(doctorHead);
     loadAppointments(appointmentHead, appointmentTail);
     loadExaminations(examinationHead);
+    loadTagihanDariBill();
 
     mainMenu();
 
@@ -223,6 +226,9 @@ int main() {
     saveDoctors(doctorHead);
     saveAppointments(appointmentHead);
     saveExaminations(examinationHead);
+
+
+
     return 0;
 }
 
@@ -2112,6 +2118,42 @@ void billingandPayment() {
     } while (pilihan != 0);
 }
 
+void loadTagihanDariBill() {
+    ifstream file("bill.txt");
+    if (file.is_open()) {
+        while (!file.eof()) {
+            Tagihan tagihanBaru;
+            file >> tagihanBaru.id;
+            file.ignore();
+            getline(file, tagihanBaru.namaPasien, ',');
+            getline(file, tagihanBaru.layanan, ',');
+            file >> tagihanBaru.jumlah;
+            file.ignore();
+            getline(file, tagihanBaru.tanggal);
+            file >> tagihanBaru.sudahDibayar;
+
+            if (!tagihanBaru.sudahDibayar) { 
+                Node* newNode = new Node;
+                newNode->data = tagihanBaru;
+                newNode->next = nullptr;
+
+                if (head == nullptr) {
+                    head = newNode;
+                } else { 
+                    Node* temp = head;
+                    while (temp->next != nullptr) {
+                        temp = temp->next;
+                    }
+                    temp->next = newNode;
+                }
+            }
+        }
+        file.close();
+    } else {
+        cout << "Gagal membuka file untuk memuat data tagihan." << endl;
+    }
+}
+
 void simpanKeBill() {
     ofstream file("bill.txt");
     if (file.is_open()) {
@@ -2128,6 +2170,55 @@ void simpanKeBill() {
     } else {
         cout << "Gagal membuka file untuk menyimpan data." << endl;
     }
+}
+
+void tambahTagihan() {
+    Tagihan tagihanBaru;
+    header();
+    cout <<"#---------------- BUAT TAGIHAN BARU ----------------#"<<endl;
+    cout << endl;
+
+    cout << "\nMasukkan ID tagihan : ";
+    cin >> tagihanBaru.id;
+    cin.ignore(); 
+
+    Node* temp = head;
+    while (temp != nullptr) {
+        if (temp->data.id == tagihanBaru.id) {
+            cout << "ID tagihan sudah ada. Silakan masukkan ID lain.\n";
+            return; 
+        }
+        temp = temp->next;
+    }
+
+    cout << "Masukkan nama pasien           : ";
+    getline(cin, tagihanBaru.namaPasien);
+    cout << "Masukkan layanan               : ";
+    getline(cin, tagihanBaru.layanan);
+    cout << "Masukkan jumlah tagihan        : ";
+    cin >> tagihanBaru.jumlah;
+    cin.ignore();
+    cout << "Masukkan tanggal (YYYY-MM-DD)  : ";
+    getline(cin, tagihanBaru.tanggal);
+
+    tagihanBaru.sudahDibayar = false;
+
+    Node* newNode = new Node;
+    newNode->data = tagihanBaru;
+    newNode->next = nullptr;
+
+    if (head == nullptr) {
+        head = newNode;
+    } else { 
+        Node* temp = head;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
+
+    cout << "\nTagihan berhasil dibuat!" << endl;
+    simpanKeBill();
 }
 
 void buatTagihanBaru() {
