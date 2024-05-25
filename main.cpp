@@ -2165,19 +2165,19 @@ void simpanKeBill() {
     if (file.is_open()) {
         Node* temp = head;
         while (temp != nullptr) {
-            file << temp->data.id << ","
-                 << temp->data.namaPasien << ","
-                 << temp->data.layanan << ","
-                 << temp->data.jumlah << ","
-                 << temp->data.tanggal << endl;
+            file    << temp->data.id << ","
+                    << temp->data.namaPasien << ","
+                    << temp->data.layanan << ","
+                    << temp->data.jumlah << ","
+                    << temp->data.tanggal << endl;
             temp = temp->next;
-        }
+        }      
         file.close();
     } else {
-        cout << "Gagal membuka file untuk menyimpan data." << endl;
+        cout << "Gagal membuka file untuk menyimpan data tagihan." << endl;
     }
 }
-
+    
 void buatTagihanBaru() {
     header();
     cout <<"#----------------------- BUAT TAGIHAN BARU -----------------------#"<<endl;
