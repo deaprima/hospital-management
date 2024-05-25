@@ -2127,31 +2127,31 @@ void billingandPayment() {
 void loadTagihanDariBill() {
     ifstream file("bill.txt");
     if (file.is_open()) {
-        while (!file.eof()) {
+        while (true) {
             Tagihan tagihanBaru;
             file >> tagihanBaru.id;
+            if (file.fail()) break;  // Break if reading ID fails (likely end of file)
             file.ignore();
             getline(file, tagihanBaru.namaPasien, ',');
             getline(file, tagihanBaru.layanan, ',');
             file >> tagihanBaru.jumlah;
             file.ignore();
             getline(file, tagihanBaru.tanggal);
-            file >> tagihanBaru.sudahDibayar;
 
-            if (!tagihanBaru.sudahDibayar) { 
-                Node* newNode = new Node;
-                newNode->data = tagihanBaru;
-                newNode->next = nullptr;
+            if (file.fail()) break;  // Break if any read operation fails
 
-                if (head == nullptr) {
-                    head = newNode;
-                } else { 
-                    Node* temp = head;
-                    while (temp->next != nullptr) {
-                        temp = temp->next;
-                    }
-                    temp->next = newNode;
+            Node* newNode = new Node;
+            newNode->data = tagihanBaru;
+            newNode->next = nullptr;
+
+            if (head == nullptr) {
+                head = newNode;
+            } else { 
+                Node* temp = head;
+                while (temp->next != nullptr) {
+                    temp = temp->next;
                 }
+                temp->next = newNode;
             }
         }
         file.close();
@@ -2264,11 +2264,11 @@ void lihatDaftarTagihan() {
     
     while (temp != nullptr) {
         Tagihan tagihanSaatIni = temp->data;
-        cout << "ID             : " << tagihanSaatIni.id 
-            << "\nNama Pasien   : " << tagihanSaatIni.namaPasien
-            << "\nLayanan       : " << tagihanSaatIni.layanan 
-            << "\nJumlah        : Rp" << tagihanSaatIni.jumlah
-            << "\nTanggal       : " << tagihanSaatIni.tanggal << endl;
+        cout << "ID            : " << tagihanSaatIni.id 
+             << "\nNama Pasien   : " << tagihanSaatIni.namaPasien
+             << "\nLayanan       : " << tagihanSaatIni.layanan 
+             << "\nJumlah        : Rp " << tagihanSaatIni.jumlah
+             << "\nTanggal       : " << tagihanSaatIni.tanggal << endl;
         cout << "----------------------------"<< endl;
         temp = temp->next;
     }
@@ -2291,7 +2291,7 @@ bool cariTagihanRekursif(Node* temp, int idCari, string namaCari) {
     }
 
     if (temp->data.id == idCari || temp->data.namaPasien == namaCari) {
-        cout << "\nTagihan ditemukan\t\t:" << endl;
+        cout << "\nTagihan ditemukan" << endl;
         cout<< "\nID            : " << temp->data.id 
             << "\nNama Pasien   : " << temp->data.namaPasien
             << "\nLayanan       : " << temp->data.layanan 
@@ -2305,7 +2305,7 @@ bool cariTagihanRekursif(Node* temp, int idCari, string namaCari) {
 
 void cariTagihan() {
     header();
-    cout <<"#---------------- CARI TAGIHAN ----------------#"<<endl;
+    cout <<"#-------------------------- CARI TAGIHAN -------------------------#"<<endl;
     cout << endl;
 
     if (head == nullptr) {
@@ -2332,25 +2332,24 @@ void cariTagihan() {
     bool ditemukan = cariTagihanRekursif(head, idCari, namaCari);
     if (!ditemukan) {
         cout << "Tagihan tidak ditemukan." << endl;
-        
-        int back;
-        do {
-            cout << endl;
-            cout << "0. Kembali\n";
-            cout << "Pilih opsi: ";
-            cin >> back;
-        } while (back != 0);
-
-        system("cls");
-        billingandPayment();  
-
     }
+
+    int back;
+    do {
+        cout << endl;
+        cout << "0.Kembali\n";
+        cout << "Pilih opsi: ";
+        cin >> back;
+    } while (back != 0);
+
+    system("cls");
+    billingandPayment();
 
 }
 
 void editTagihan() {
     header();
-    cout <<"#---------------- EDIT TAGIHAN  ----------------#"<<endl;
+    cout <<"#------------------------- EDIT TAGIHAN  ------------------------#"<<endl;
     cout << endl;
 
     if (head == nullptr) {
@@ -2396,9 +2395,10 @@ void editTagihan() {
     }
 
     if (!ditemukan) {
-        cout << "Tagihan tidak ditemukan." << endl;
+        cout << "Tagihan tidak ditemukan." << endl;  
+    }
 
-        int back;
+    int back;
         do {
             cout << endl;
             cout << "0. Kembali\n";
@@ -2407,13 +2407,12 @@ void editTagihan() {
         } while (back != 0);
 
         system("cls");
-        billingandPayment();  
-    }
+        billingandPayment();
 }
 
 void bayarTagihan() {
     header();
-    cout <<"#-------------------- PEMBAYARAN --------------------#"<<endl;
+    cout <<"#--------------------------- PEMBAYARAN -------------------------#"<<endl;
     cout << endl;
 
     if (head == nullptr) {
@@ -2441,7 +2440,7 @@ void bayarTagihan() {
     while (temp != nullptr) {
         if (temp->data.id == id) {
             found = true;
-            cout << "Biaya Tagihan  : Rp" << temp->data.jumlah << endl;
+            cout << "Biaya Tagihan  : Rp " << temp->data.jumlah << endl;
             cout << "Nama           : " << temp->data.namaPasien << endl;
 
             char konfirmasi;
@@ -2469,8 +2468,10 @@ void bayarTagihan() {
     }
 
     if (!found) {
-        cout << "Tagihan tidak ditemukan." << endl;
-        int back;
+        cout << "Tagihan tidak ditemukan." << endl; 
+    }
+
+    int back;
         do {
             cout << endl;
             cout << "0. Kembali\n";
@@ -2479,6 +2480,5 @@ void bayarTagihan() {
         } while (back != 0);
 
         system("cls");
-        billingandPayment();  
-    }
+        billingandPayment();
 }

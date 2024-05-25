@@ -8,13 +8,3 @@
 802,Dr.Hadi,THT
 913,Dr.Indah,Gigi
 924,Dr.Joko,Umum
-225,Dr.Kris,THT
-266,Dr.Lina,Umum
-392,Dr.Mario,Gigi
-418,Dr.Nina,Umum
-779,Dr.Oscar,THT
-681,Dr.Prita,Gigi
-731,Dr.Queen,THT
-172,Dr.Rudi,Umum
-922,Dr.Sari,Gigi
-124,Dr.Tono,Umum
