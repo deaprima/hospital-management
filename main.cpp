@@ -116,7 +116,7 @@ struct SpecializationNode {
 // Ukuran hash table
 const int TABLE_SIZE = 100;
 
-// Hash Table
+// Hash Table untuk dokter
 struct HashTable {
     DoctorNode* table[TABLE_SIZE];
 };
@@ -202,7 +202,6 @@ bool cariTagihanRekursif(Node* temp, int idCari, string namaCari);
 void cariTagihan();
 void editTagihan();
 void bayarTagihan();
-
 
 // ########################################################## MAIN PROGRAM
 int main() {
@@ -358,12 +357,9 @@ void loadPatients(PatientNode*& head) {
 
         getline(ss, line, ',');
         dataPatient.id = stoi(line);
-
         getline(ss, dataPatient.name, ',');
-
         getline(ss, line, ',');
         dataPatient.age = stoi(line);
-
         getline(ss, dataPatient.address, ',');
 
         addPatient(head, dataPatient);
@@ -413,9 +409,7 @@ void loadDoctors(DoctorNode*& head) {
 
         getline(ss, line, ',');
         dataDoctor.id = stoi(line);
-
         getline(ss, dataDoctor.name, ',');
-
         getline(ss, dataDoctor.specialization, ',');
 
         addDoctor(head, dataDoctor);
@@ -460,21 +454,14 @@ void loadAppointments(AppointmentNode*& head, AppointmentNode*& tail) {
 
         getline(ss, line, ',');
         dataAppointment.id = stoi(line);
-
         getline(ss, line, ',');
         dataAppointment.patientId = stoi(line);
-
         getline(ss, dataAppointment.patientName, ',');
-
         getline(ss, line, ',');
         dataAppointment.doctorId = stoi(line);
-
         getline(ss, dataAppointment.doctorName, ',');
-
         getline(ss, dataAppointment.date, ',');
-
         getline(ss, dataAppointment.time, ',');
-
         lastAppointmentId = max(lastAppointmentId, dataAppointment.id);
 
         addAppointment(head, tail, dataAppointment);
@@ -558,23 +545,15 @@ void loadExaminations(ExaminationNode*& head) {
 
         getline(ss, line, ',');
         dataExamination.id = stoi(line);
-
         getline(ss, line, ',');
         dataExamination.patientId = stoi(line);
-
         getline(ss, dataExamination.patientName, ',');
-
         getline(ss, line, ',');
         dataExamination.doctorId = stoi(line);
-
         getline(ss, dataExamination.doctorName, ',');
-
         getline(ss, dataExamination.doctorspecialization, ',');
-
         getline(ss, dataExamination.diagnosis, ',');
-
         getline(ss, dataExamination.treatment, ',');
-
         addExamination(head, dataExamination);
     }
     file.close();
@@ -871,7 +850,7 @@ void searchPatients(PatientNode* head) {
 
 void editPatient(PatientNode* head) {
     header();
-    cout <<"#----------------------- EDIT DATA PASIEN -----------------------#"<<endl;
+    cout <<"#----------------------- EDIT DATA PASIEN ------------------------#"<<endl;
     cout << endl;
 
     int choice;
@@ -1328,7 +1307,7 @@ void searchDoctors(DoctorNode* head) {
 
 void editDoctor(DoctorNode* head) {
     header();
-    cout <<"#----------------------- EDIT DATA DOKTER -----------------------#"<<endl;
+    cout <<"#----------------------- EDIT DATA DOKTER ------------------------#"<<endl;
     cout << endl;
 
     int choice;
@@ -1704,7 +1683,7 @@ void editAppointment(AppointmentNode* head) {
 
 void cancelAppointment(AppointmentNode*& head, AppointmentNode*& tail) {
     header();
-    cout <<"#----------------------- BATAL JANJI TEMU -----------------------#"<<endl;
+    cout <<"#----------------------- BATAL JANJI TEMU ------------------------#"<<endl;
     cout << endl;
     
     int id;
@@ -1793,7 +1772,7 @@ void examinationAndTreatment() {
 
 void addExaminationResult() {
     header();
-    cout <<"#------------------ TAMBAH HASIL PEMERIKSAAN ------------------#"<<endl;
+    cout <<"#-------------------- TAMBAH HASIL PEMERIKSAAN -------------------#"<<endl;
     cout << endl;
 
     Examination newExamination;
@@ -1844,7 +1823,7 @@ void addExaminationResult() {
 
 void viewMedicalHistory() {
     header();
-    cout <<"#----------------- RIWAYAT HASIL PEMERIKSAAN ------------------#"<<endl;
+    cout <<"#------------------- RIWAYAT HASIL PEMERIKSAAN -------------------#"<<endl;
     cout << endl;
 
     int choice;
@@ -1940,7 +1919,7 @@ void displaySpecializationGraph() {
 
 void editExaminationResult() {
     header();
-    cout <<"#----------------- EDIT HASIL PEMERIKSAAN ------------------#"<<endl;
+    cout <<"#--------------------- EDIT HASIL PEMERIKSAAN --------------------#"<<endl;
     cout << endl;
 
     int id;
@@ -1987,7 +1966,7 @@ void editExaminationResult() {
 
 void deleteExaminationResult() {
     header();
-    cout <<"#---------------- HAPUS HASIL PEMERIKSAAN ----------------#"<<endl;
+    cout <<"#-------------------- HAPUS HASIL PEMERIKSAAN --------------------#"<<endl;
     cout << endl;
 
     int id;
@@ -2035,7 +2014,7 @@ void deleteExaminationResult() {
 
 void undoLastOperation() {
     header();
-    cout <<"#---------------------- UNDO OPERASI TERAKHIR ----------------------#"<<endl;
+    cout <<"#--------------------- UNDO OPERASI TERAKHIR ---------------------#"<<endl;
     cout << endl;
 
     try {
@@ -2349,7 +2328,7 @@ void cariTagihan() {
 
 void editTagihan() {
     header();
-    cout <<"#------------------------- EDIT TAGIHAN  ------------------------#"<<endl;
+    cout <<"#-------------------------- EDIT TAGIHAN  ------------------------#"<<endl;
     cout << endl;
 
     if (head == nullptr) {
@@ -2412,7 +2391,7 @@ void editTagihan() {
 
 void bayarTagihan() {
     header();
-    cout <<"#--------------------------- PEMBAYARAN -------------------------#"<<endl;
+    cout <<"#--------------------------- PEMBAYARAN --------------------------#"<<endl;
     cout << endl;
 
     if (head == nullptr) {

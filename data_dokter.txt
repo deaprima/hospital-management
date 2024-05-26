@@ -7,4 +7,4 @@
 791,Dr.Gita,Umum
 802,Dr.Hadi,THT
 913,Dr.Indah,Gigi
-924,Dr.Joko,Umum
+987,Dr.Arini,Gigi

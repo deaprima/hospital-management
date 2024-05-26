@@ -1,0 +1,4 @@
+1,345,Anton,135,Dr.Andi,Umum,Demam,Obat penurun demam
+2,123,Ahmad,913,Dr.Indah,Gigi,Gigi berlubang,Cabut gigi
+3,567,Putri,246,Dr.Budi,Gigi,Karang gigi,Pembersihan karang
+4,789,Risma,802,Dr.Hadi,THT,Gangguan pendengaran,Pembersihan telinga
